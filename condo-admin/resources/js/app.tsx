@@ -1,4 +1,7 @@
+import '@mantine/core/styles.css';
+
 import { createInertiaApp } from '@inertiajs/react';
+import { MantineProvider } from '@mantine/core';
 import { Toaster } from '@/components/ui/sonner';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { initializeTheme } from '@/hooks/use-appearance';
@@ -25,10 +28,12 @@ void createInertiaApp({
     strictMode: true,
     withApp(app) {
         return (
-            <TooltipProvider delayDuration={0}>
-                {app}
-                <Toaster />
-            </TooltipProvider>
+            <MantineProvider>
+                <TooltipProvider delayDuration={0}>
+                    {app}
+                    <Toaster />
+                </TooltipProvider>
+            </MantineProvider>
         );
     },
     progress: {

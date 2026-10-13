@@ -36,6 +36,16 @@
 
         @fonts
 
+        {{-- Mantine color scheme script (prevents flash on dark mode) --}}
+        <script>
+            (function() {
+                try {
+                    var colorScheme = localStorage.getItem('mantine-color-scheme-value') || 'light';
+                    document.documentElement.setAttribute('data-mantine-color-scheme', colorScheme);
+                } catch (e) {}
+            })();
+        </script>
+
         @viteReactRefresh
         @vite(['resources/css/app.css', 'resources/js/app.tsx', "resources/js/pages/{$page['component']}.tsx"])
         <x-inertia::head>
