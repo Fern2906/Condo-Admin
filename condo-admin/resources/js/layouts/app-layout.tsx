@@ -1,16 +1,19 @@
-import AppLayoutTemplate from '@/layouts/app/app-sidebar-layout';
-import type { BreadcrumbItem } from '@/types';
+import Navbar from '@/matine-components/navbar';
+import {Footer} from '@/matine-components/footer';
+export default function AppLayout({children}: Readonly<{children: React.ReactNode;}>) {
 
-export default function AppLayout({
-    breadcrumbs = [],
-    children,
-}: {
-    breadcrumbs?: BreadcrumbItem[];
-    children: React.ReactNode;
-}) {
+    const links = [
+        { link: '/about', label: 'Features' },
+        { link: '/pricing', label: 'Pricing' },
+        { link: '/learn', label: 'Learn' },
+        { link: '/community', label: 'Community' },
+    ];
+
     return (
-        <AppLayoutTemplate breadcrumbs={breadcrumbs}>
+        <>
+        <Navbar links={links}></Navbar>
             {children}
-        </AppLayoutTemplate>
+        <Footer></Footer>
+        </>
     );
 }
