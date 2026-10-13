@@ -1,44 +1,20 @@
-import {
-    IconBell,
-  IconBuildingBank,
-  IconCalendarClock,
-  IconCashBanknote,
-  IconCoin,
-  IconCreditCard,
-  IconHome,
-  IconMessage,
-  IconMessage2,
-  IconReceipt,
-  IconReceiptRefund,
-  IconReceiptTax,
-  IconRepeat,
-  IconReport,
-} from '@tabler/icons-react';
-import {
-  Card,
-  Group,
-  SimpleGrid,
-  Text,
-  UnstyledButton,
-  useMantineTheme,
-} from '@mantine/core';
+import {Card,Group,SimpleGrid,Text,UnstyledButton} from '@mantine/core';
 import classes from '../../css/accion-cards.module.css';
+interface CardData  {
+    title : string;
+    icon: React.ComponentType<{ color?: string; size?: number; stroke?: number }>;
+    color: string;
+}
 
-const mockdata = [
-  { title: 'Mi casa', icon: IconHome, color: 'indigo' },
-  { title: 'Mis cuotas y pagos', icon: IconReceiptTax, color: 'cyan' },
-  { title: 'Mis incidencias', icon: IconReport, color: 'pink' },
-  { title: 'Reservar áreas comunes', icon: IconCalendarClock, color: 'red' },
-  { title: 'Avisos', icon: IconBell, color: 'red' },
-  { title: 'Contacto con administración', icon: IconMessage, color: 'red' },
-];
+interface CardProps {
+    data: CardData[]
+}
 
-export function AccionCards() {
-  const theme = useMantineTheme();
+export function AccionCards({data} : Readonly<CardProps>) {
 
-  const items = mockdata.map((item) => (
+  const items = data.map((item) => (
     <UnstyledButton key={item.title} className={classes.item}>
-      <item.icon color={theme.colors[item.color][6]} size={32} stroke={1.5} />
+      <item.icon color={item.color} size={32} stroke={1.5} />
       <Text size="xs" mt={7}>
         {item.title}
       </Text>
