@@ -1,32 +1,29 @@
-import AppLayout from "@/layouts/app-layout";
-import { AccionCards } from "@/matine-components/accion-cards";
-import { usePage } from "@inertiajs/react";
-import { IconHome, IconReceiptTax, IconReport, IconCalendarClock, IconBell, IconMessage } from "@tabler/icons-react";
+import { Button, Container, Overlay, Title, Text } from "@mantine/core";
+import classes from '../../css/welcome.module.css';
+import { login } from "@/routes";
 
 export default function Welcome() {
-    // const { auth } = usePage().props;
-    // const userRol = auth.user.rol
-    const dataResident = [
-        { title: 'Mi casa', icon: IconHome, color: 'blue' },
-        { title: 'Mis cuotas y pagos', icon: IconReceiptTax, color: 'purple' },
-        { title: 'Mis incidencias', icon: IconReport, color: 'green' },
-        { title: 'Reservar áreas comunes', icon: IconCalendarClock, color: 'red' },
-        { title: 'Avisos', icon: IconBell, color: 'orange' },
-        { title: 'Contacto con administración', icon: IconMessage, color: 'teal' },
-    ];
-    const dataAdmin = [
-        { title: 'Casas', icon: IconHome, color: 'blue' },
-        { title: 'Cuotas y pagos', icon: IconReceiptTax, color: 'purple' },
-        { title: 'Incidencias', icon: IconReport, color: 'green' },
-        { title: 'Reservaciones', icon: IconCalendarClock, color: 'red' },
-        { title: 'Avisos', icon: IconBell, color: 'orange' },
-        { title: 'Reportes', icon: IconMessage, color: 'teal' },
-    ];
-
     return (
-        <AppLayout>
-            {/* <AccionCards data={userRol === "resident" ? dataResident : dataAdmin} /> */}
-            <AccionCards data={dataAdmin} />
-        </AppLayout>
+        <div className={classes.hero}>
+            <Overlay
+                gradient="linear-gradient(180deg, rgba(0, 0, 0, 0.25) 0%, rgba(0, 0, 0, .65) 40%)"
+                opacity={1}
+                zIndex={0}
+            />
+            <Container className={classes.container} size="md">
+                <Title className={classes.title}>
+                    Gestión inteligente para tu comunidad y edificio
+                </Title>
+                <Text className={classes.description} size="xl" mt="xl">
+                    Simplifica la administración de tu condominio. Controla pagos de mantenimiento,
+                    reserva de áreas comunes, accesos y comunicación directa entre residentes y la
+                    administración en un solo lugar.
+                </Text>
+
+                <Button component="a" href={login.url()} variant="gradient" size="xl" radius="xl" className={classes.control}>
+                    Comienza
+                </Button>
+            </Container>
+        </div>
     );
 }

@@ -13,8 +13,8 @@ export default function AuthSimpleLayout({
                 <div className="flex flex-col gap-8">
                     <div className="flex flex-col items-center gap-4">
                         <Link href={home()} className="flex flex-col items-center gap-2 font-medium">
-                            <div className="mb-1 flex h-9 w-9 items-center justify-center rounded-md">
-                                <IconBuildingSkyscraper className="size-9 text-(--foreground) dark:text-white" />
+                            <div className="mb-1 flex items-center justify-center rounded-md">
+                                <IconBuildingSkyscraper className="size-20 text-(--foreground) dark:text-white" />
                             </div>
                             <span className="sr-only text-black">{title}</span>
                         </Link>

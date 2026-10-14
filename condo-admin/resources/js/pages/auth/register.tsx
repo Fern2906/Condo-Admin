@@ -224,7 +224,6 @@ export default function Register(_props: Props) {
     const strengthColor =
         strength >= 75 ? 'teal' : strength >= 40 ? 'yellow' : 'red';
 
-    // Campos que se validan en cada paso.
     const stepFields: Record<number, (keyof RegisterValues)[]> = {
         0: ['name', 'email', 'password', 'password_confirmation'],
         1: [
@@ -263,7 +262,6 @@ export default function Register(_props: Props) {
         setActive((current) => Math.max(current - 1, 0));
     };
 
-    // Envía todos los datos a Laravel.
     const handleSubmit = (values: RegisterValues) => {
         setProcessing(true);
 
