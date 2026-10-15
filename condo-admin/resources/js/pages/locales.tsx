@@ -184,18 +184,15 @@ const getStatusBadge = (status: LocalData['status']) => {
 export default function LocalesPage() {
     const [localesList, setLocalesList] = useState<LocalData[]>(initialLocales);
     const [selection, setSelection] = useState<string[]>([]);
-    const [viewMode, setViewMode] = useState<'table' | 'grid'>('table');
     const [searchQuery, setSearchQuery] = useState('');
     const [filterStatus, setFilterStatus] = useState<string | null>(null);
     const [filterBuilding, setFilterBuilding] = useState<string | null>(null);
 
-    // Modal / Drawer state
     const [createModalOpened, { open: openCreateModal, close: closeCreateModal }] = useDisclosure(false);
     const [detailDrawerOpened, { open: openDetailDrawer, close: closeDetailDrawer }] = useDisclosure(false);
     const [editModalOpened, { open: openEditModal, close: closeEditModal }] = useDisclosure(false);
     const [selectedLocal, setSelectedLocal] = useState<LocalData | null>(null);
 
-    // New Local form state
     const [newLocal, setNewLocal] = useState<Partial<LocalData>>({
         code: '',
         name: '',
@@ -208,10 +205,8 @@ export default function LocalesPage() {
         status: 'Disponible',
     });
 
-    // Edit Local form state
     const [editFormData, setEditFormData] = useState<Partial<LocalData>>({});
 
-    // Filtered locales
     const filteredLocales = useMemo(() => {
         return localesList.filter((local) => {
             const matchesSearch =
@@ -228,14 +223,12 @@ export default function LocalesPage() {
         });
     }, [localesList, searchQuery, filterStatus, filterBuilding]);
 
-    // Summary calculations
     const totalLocales = localesList.length;
     const occupiedCount = localesList.filter((l) => l.status === 'Ocupado').length;
     const availableCount = localesList.filter((l) => l.status === 'Disponible').length;
     const maintenanceCount = localesList.filter((l) => l.status === 'Mantenimiento').length;
     const occupiedPercentage = totalLocales > 0 ? Math.round((occupiedCount / totalLocales) * 100) : 0;
 
-    // Checkbox selection handlers
     const toggleRow = (code: string) => {
         setSelection((current) =>
             current.includes(code) ? current.filter((item) => item !== code) : [...current, code]
@@ -248,20 +241,17 @@ export default function LocalesPage() {
         );
     };
 
-    // Open detail
     const handleViewDetail = (local: LocalData) => {
         setSelectedLocal(local);
         openDetailDrawer();
     };
 
-    // Open edit
     const handleOpenEdit = (local: LocalData) => {
         setSelectedLocal(local);
         setEditFormData({ ...local });
         openEditModal();
     };
 
-    // Save edited local
     const handleSaveEdit = () => {
         if (!selectedLocal) return;
         setLocalesList((prev) =>
@@ -270,19 +260,16 @@ export default function LocalesPage() {
         closeEditModal();
     };
 
-    // Handle delete single
     const handleDeleteSingle = (id: string) => {
         setLocalesList((prev) => prev.filter((item) => item.id !== id));
         setSelection((prev) => prev.filter((code) => code !== selectedLocal?.code));
     };
 
-    // Handle delete batch
     const handleDeleteSelected = () => {
         setLocalesList((prev) => prev.filter((item) => !selection.includes(item.code)));
         setSelection([]);
     };
 
-    // Handle create new local
     const handleCreateLocal = () => {
         if (!newLocal.code || !newLocal.name) return;
         const created: LocalData = {
@@ -347,7 +334,6 @@ export default function LocalesPage() {
                     </Button>
                 </Flex>
 
-                {/* Metrics / KPI Summary */}
                 <SimpleGrid cols={{ base: 1, sm: 2, md: 4 }} spacing="md">
                     <Card withBorder radius="md" padding="md">
                         <Group justify="space-between" align="center">
@@ -434,7 +420,6 @@ export default function LocalesPage() {
                     </Card>
                 </SimpleGrid>
 
-                {/* Filters and View Controls Card */}
                 <Card withBorder radius="md" padding="md">
                     <Grid align="center" gap="md">
                         <Grid.Col span={{ base: 12, md: 5 }}>
@@ -484,39 +469,9 @@ export default function LocalesPage() {
                                 ]}
                             />
                         </Grid.Col>
-
-                        <Grid.Col span={{ base: 12, sm: 6, md: 2 }}>
-                            <Flex justify={{ base: 'flex-start', sm: 'flex-end' }}>
-                                <SegmentedControl
-                                    value={viewMode}
-                                    onChange={(value) => setViewMode(value as 'table' | 'grid')}
-                                    data={[
-                                        {
-                                            value: 'table',
-                                            label: (
-                                                <Center style={{ gap: 6 }}>
-                                                    <IconList size={16} />
-                                                    <Text size="xs">Tabla</Text>
-                                                </Center>
-                                            ),
-                                        },
-                                        {
-                                            value: 'grid',
-                                            label: (
-                                                <Center style={{ gap: 6 }}>
-                                                    <IconLayoutGrid size={16} />
-                                                    <Text size="xs">Tarjetas</Text>
-                                                </Center>
-                                            ),
-                                        },
-                                    ]}
-                                />
-                            </Flex>
-                        </Grid.Col>
                     </Grid>
                 </Card>
 
-                {/* Content: Table or Grid */}
                 <Card withBorder radius="md" padding="lg" w="100%">
                     <Table.ScrollContainer minWidth={850} maxHeight={600}>
                         <Table striped highlightOnHover verticalSpacing="sm">
@@ -648,31 +603,21 @@ export default function LocalesPage() {
                 </Card>
                 
 
-                {/* Floating Action Bar on Selection */}
                 <ActionBar opened={selection.length > 0} onClose={() => setSelection([])} shadow="md">
                     <Text visibleFrom="xs" size="sm">
                         {selection.length} locales seleccionados
                     </Text>
                     <ActionBar.Divider />
 
-                    <Button
-                        variant="filled"
-                        color="red"
-                        px={{ base: 'xs', sm: 'md' }}
-                        onClick={handleDeleteSelected}
-                    >
+                    <Button variant="filled" color="red" px={{ base: 'xs', sm: 'md' }} onClick={handleDeleteSelected}>
                         <IconTrash size={14} />
                         <Box visibleFrom="xs" ml={6}>
                             Eliminar
                         </Box>
                     </Button>
 
-                    <Button
-                        variant="filled"
-                        color="blue"
-                        px={{ base: 'xs', sm: 'md' }}
+                    <Button variant="filled" color="blue" px={{ base: 'xs', sm: 'md' }}
                         onClick={() => {
-                            // Cambiar a disponible
                             setLocalesList((prev) =>
                                 prev.map((l) => (selection.includes(l.code) ? { ...l, status: 'Disponible' } : l))
                             );
@@ -689,10 +634,7 @@ export default function LocalesPage() {
                 </ActionBar>
             </Stack>
 
-            {/* Modal: Crear Nuevo Local */}
-            <Modal
-                opened={createModalOpened}
-                onClose={closeCreateModal}
+            <Modal opened={createModalOpened} onClose={closeCreateModal}
                 title={
                     <Group gap="xs">
                         <ThemeIcon color="blue" variant="light" size="md">
@@ -707,27 +649,16 @@ export default function LocalesPage() {
                 <Stack gap="md">
                     <Grid gap="md">
                         <Grid.Col span={{ base: 12, sm: 4 }}>
-                            <TextInput
-                                label="Código del local"
-                                placeholder="Ej: LC-11"
-                                required
-                                value={newLocal.code}
-                                onChange={(e) => setNewLocal({ ...newLocal, code: e.currentTarget.value })}
-                            />
+                            <TextInput label="Código del local" placeholder="Ej: LC-11" required value={newLocal.code} onChange={(e) => setNewLocal({ ...newLocal, code: e.currentTarget.value })}/>
                         </Grid.Col>
                         <Grid.Col span={{ base: 12, sm: 8 }}>
-                            <TextInput
-                                label="Nombre / Razón Social"
-                                placeholder="Ej: Cafetería Central"
-                                required
-                                value={newLocal.name}
+                            <TextInput label="Nombre / Razón Social" placeholder="Ej: Cafetería Central" required value={newLocal.name}
                                 onChange={(e) => setNewLocal({ ...newLocal, name: e.currentTarget.value })}
                             />
                         </Grid.Col>
 
                         <Grid.Col span={{ base: 12, sm: 6 }}>
-                            <Select
-                                label="Giro o categoría comercial"
+                            <Select label="Giro o categoría comercial"
                                 data={[
                                     'Comercial / Retail',
                                     'Gastronómico',
@@ -741,9 +672,7 @@ export default function LocalesPage() {
                             />
                         </Grid.Col>
                         <Grid.Col span={{ base: 12, sm: 6 }}>
-                            <Select
-                                label="Estado inicial"
-                                data={['Disponible', 'Ocupado', 'Mantenimiento', 'Reservado']}
+                            <Select label="Estado inicial" data={['Disponible', 'Ocupado', 'Mantenimiento', 'Reservado']}
                                 value={newLocal.status}
                                 onChange={(val) =>
                                     setNewLocal({ ...newLocal, status: (val as LocalData['status']) || 'Disponible' })
@@ -752,30 +681,17 @@ export default function LocalesPage() {
                         </Grid.Col>
 
                         <Grid.Col span={{ base: 12, sm: 6 }}>
-                            <Select
-                                label="Edificio / Zona"
-                                data={['Torre A', 'Torre B', 'Torre C', 'Plaza Central']}
-                                value={newLocal.building}
+                            <Select label="Edificio / Zona" data={['Torre A', 'Torre B', 'Torre C', 'Plaza Central']} value={newLocal.building}
                                 onChange={(val) => setNewLocal({ ...newLocal, building: val || 'Torre A' })}
                             />
                         </Grid.Col>
                         <Grid.Col span={{ base: 12, sm: 6 }}>
-                            <Select
-                                label="Nivel / Piso"
-                                data={['Planta Baja', 'Piso 1', 'Piso 2', 'Nivel Terraza']}
-                                value={newLocal.level}
-                                onChange={(val) => setNewLocal({ ...newLocal, level: val || 'Planta Baja' })}
+                            <Select label="Nivel / Piso" data={['Planta Baja', 'Piso 1', 'Piso 2', 'Nivel Terraza']} value={newLocal.level} onChange={(val) => setNewLocal({ ...newLocal, level: val || 'Planta Baja' })}
                             />
                         </Grid.Col>
 
                         <Grid.Col span={{ base: 12, sm: 4 }}>
-                            <NumberInput
-                                label="Superficie (m²)"
-                                min={10}
-                                max={1000}
-                                value={newLocal.area}
-                                onChange={(val) => setNewLocal({ ...newLocal, area: Number(val) })}
-                            />
+                            <NumberInput label="Superficie (m²)" min={10} max={1000} value={newLocal.area} onChange={(val) => setNewLocal({ ...newLocal, area: Number(val) })}/>
                         </Grid.Col>
                         <Grid.Col span={{ base: 12, sm: 4 }}>
                             <NumberInput
