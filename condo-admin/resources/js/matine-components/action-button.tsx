@@ -6,11 +6,12 @@ interface ActionItem {
     icon: React.ComponentType<{ size?: number; stroke?: number; color?: string }>;
     color: string;
     badge?: string;
+    href?: string;
 }
 
 export function ActionButton({ item }: { item: ActionItem }) {
     return (
-        <UnstyledButton className={classes.item}>
+        <UnstyledButton component='a' href={item.href} className={classes.item}>
             <Box pos="relative" style={{ display: 'inline-block' }}>
                 <item.icon size={32} stroke={1.5} color={`var(--mantine-color-${item.color}-6)`} />
                 {item.badge && (

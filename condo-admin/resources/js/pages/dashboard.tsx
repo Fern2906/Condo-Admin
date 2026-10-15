@@ -3,10 +3,11 @@ import {Box,Card,Grid,SimpleGrid,Stack,Text,Title,} from '@mantine/core';
 import {IconBell,IconBuildingStore,IconCalendarClock,IconChartBar,IconFileReport,IconHome,IconMessage,IconReceiptTax,IconReport,IconUsers,} from '@tabler/icons-react';
 import { StatCard } from '@/matine-components/stat-card';
 import { ActionButton } from '@/matine-components/action-button';
+import { locales, userList } from '@/routes/';
 
 const adminActions = [
-    { title: 'Locales', icon: IconBuildingStore, color: 'blue' },
-    { title: 'Locatarios', icon: IconUsers, color: 'violet' },
+    { title: 'Locales', icon: IconBuildingStore, color: 'blue', href: locales.url() },
+    { title: 'Locatarios', icon: IconUsers, color: 'violet', href: userList.url() },
     { title: 'Cuotas y pagos', icon: IconReceiptTax, color: 'green' },
     { title: 'Incidencias', icon: IconReport, color: 'red', badge: '3' },
     { title: 'Reservaciones', icon: IconCalendarClock, color: 'orange' },

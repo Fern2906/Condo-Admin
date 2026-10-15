@@ -3,10 +3,9 @@ import { Footer } from '@/matine-components/footer';
 
 export default function AppLayout({ children }: Readonly<{ children: React.ReactNode }>) {
     const links = [
-        { link: '/about', label: 'Features' },
-        { link: '/pricing', label: 'Pricing' },
-        { link: '/learn', label: 'Learn' },
-        { link: '/community', label: 'Community' },
+        { link: '/dashboard', label: 'Dashboard' },
+        { link: '/locales', label: 'Locales' },
+        { link: '/users', label: 'Locatarios' },
     ];
 
     return (
