@@ -1,55 +1,8 @@
 import { useState, useMemo } from 'react';
-import {
-    ActionBar,
-    ActionIcon,
-    Badge,
-    Box,
-    Button,
-    Card,
-    Center,
-    Checkbox,
-    Drawer,
-    Flex,
-    Grid,
-    Group,
-    Menu,
-    Modal,
-    NumberInput,
-    RingProgress,
-    SegmentedControl,
-    Select,
-    SimpleGrid,
-    Stack,
-    Table,
-    Text,
-    TextInput,
-    ThemeIcon,
-    Title,
-} from '@mantine/core';
+import { ActionBar, ActionIcon, Badge, Box, Button, Card, Center, Checkbox, Drawer, Flex, Grid, Group, Menu, Modal, NumberInput, RingProgress, SegmentedControl, Select, SimpleGrid, Stack, Table, Text, TextInput, ThemeIcon, Title, } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { Head } from '@inertiajs/react';
-import {
-    IconAlertCircle,
-    IconBuilding,
-    IconBuildingStore,
-    IconCalendar,
-    IconCheck,
-    IconDotsVertical,
-    IconEye,
-    IconLayoutGrid,
-    IconList,
-    IconMail,
-    IconMaximize,
-    IconPencil,
-    IconPhone,
-    IconPlus,
-    IconReceipt,
-    IconSearch,
-    IconTools,
-    IconTrash,
-    IconUser,
-    IconX,
-} from '@tabler/icons-react';
+import { IconAlertCircle, IconBuilding, IconBuildingStore, IconCalendar, IconCheck, IconDotsVertical, IconEye, IconLayoutGrid, IconList, IconMail, IconMaximize, IconPencil, IconPhone, IconPlus, IconReceipt, IconSearch, IconTools, IconTrash, IconUser, IconX, } from '@tabler/icons-react';
 
 export interface LocalData {
     id: string;
@@ -1213,6 +1166,7 @@ export default function LocalesPage() {
                 }
                 position="right"
                 size="md"
+                overlayProps={{ backgroundOpacity: 0.5, blur: 4 }}
             >
                 {selectedLocal && (
                     <Stack gap="lg" mt="md">
