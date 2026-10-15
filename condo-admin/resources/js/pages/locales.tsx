@@ -11,7 +11,7 @@ export interface LocalData {
     businessType: string;
     building: string;
     level: string;
-    area: number; // m2
+    area: number; 
     monthlyRent: number;
     maintenanceFee: number;
     status: 'Ocupado' | 'Disponible' | 'Mantenimiento' | 'Reservado';
@@ -320,7 +320,6 @@ export default function LocalesPage() {
             <Head title="Gestión de Locales" />
 
             <Stack gap="xl" p="md" w="100%" h="100%">
-                {/* Header Section */}
                 <Flex justify="space-between" align="center" wrap="wrap" gap="md">
                     <Flex gap="md" align="center">
                         <Center>
@@ -518,311 +517,136 @@ export default function LocalesPage() {
                 </Card>
 
                 {/* Content: Table or Grid */}
-                {viewMode === 'table' ? (
-                    <Card withBorder radius="md" padding="lg" w="100%">
-                        <Table.ScrollContainer minWidth={850} maxHeight={600}>
-                            <Table striped highlightOnHover verticalSpacing="sm">
-                                <Table.Thead>
+                <Card withBorder radius="md" padding="lg" w="100%">
+                    <Table.ScrollContainer minWidth={850} maxHeight={600}>
+                        <Table striped highlightOnHover verticalSpacing="sm">
+                            <Table.Thead>
+                                <Table.Tr>
+                                    <Table.Th w={40}>
+                                        <Checkbox
+                                            aria-label="Seleccionar todos"
+                                            checked={selection.length > 0 && selection.length === filteredLocales.length}
+                                            indeterminate={
+                                                selection.length > 0 && selection.length !== filteredLocales.length
+                                            }
+                                            onChange={toggleAll}
+                                        />
+                                    </Table.Th>
+                                    <Table.Th>Código</Table.Th>
+                                    <Table.Th>Nombre / Giro</Table.Th>
+                                    <Table.Th>Ubicación</Table.Th>
+                                    <Table.Th>Superficie</Table.Th>
+                                    <Table.Th>Locatario</Table.Th>
+                                    <Table.Th>Renta Mensual</Table.Th>
+                                    <Table.Th>Estado</Table.Th>
+                                    <Table.Th ta="center">Acciones</Table.Th>
+                                </Table.Tr>
+                            </Table.Thead>
+                            <Table.Tbody>
+                                {filteredLocales.length === 0 ? (
                                     <Table.Tr>
-                                        <Table.Th w={40}>
-                                            <Checkbox
-                                                aria-label="Seleccionar todos"
-                                                checked={selection.length > 0 && selection.length === filteredLocales.length}
-                                                indeterminate={
-                                                    selection.length > 0 && selection.length !== filteredLocales.length
-                                                }
-                                                onChange={toggleAll}
-                                            />
-                                        </Table.Th>
-                                        <Table.Th>Código</Table.Th>
-                                        <Table.Th>Nombre / Giro</Table.Th>
-                                        <Table.Th>Ubicación</Table.Th>
-                                        <Table.Th>Superficie</Table.Th>
-                                        <Table.Th>Locatario</Table.Th>
-                                        <Table.Th>Renta Mensual</Table.Th>
-                                        <Table.Th>Estado</Table.Th>
-                                        <Table.Th ta="center">Acciones</Table.Th>
+                                        <Table.Td colSpan={9} ta="center" py="xl">
+                                            <Flex direction="column" align="center" gap="xs">
+                                                <IconAlertCircle size={32} color="gray" />
+                                                <Text c="dimmed">No se encontraron locales con los filtros seleccionados.</Text>
+                                            </Flex>
+                                        </Table.Td>
                                     </Table.Tr>
-                                </Table.Thead>
-                                <Table.Tbody>
-                                    {filteredLocales.length === 0 ? (
-                                        <Table.Tr>
-                                            <Table.Td colSpan={9} ta="center" py="xl">
-                                                <Flex direction="column" align="center" gap="xs">
-                                                    <IconAlertCircle size={32} color="gray" />
-                                                    <Text c="dimmed">No se encontraron locales con los filtros seleccionados.</Text>
-                                                </Flex>
+                                ) : (
+                                    filteredLocales.map((local) => (
+                                        <Table.Tr key={local.code}>
+                                            <Table.Td>
+                                                <Checkbox
+                                                    checked={selection.includes(local.code)}
+                                                    onChange={() => toggleRow(local.code)}
+                                                />
                                             </Table.Td>
-                                        </Table.Tr>
-                                    ) : (
-                                        filteredLocales.map((local) => (
-                                            <Table.Tr key={local.code}>
-                                                <Table.Td>
-                                                    <Checkbox
-                                                        checked={selection.includes(local.code)}
-                                                        onChange={() => toggleRow(local.code)}
-                                                    />
-                                                </Table.Td>
-                                                <Table.Td>
-                                                    <Badge variant="outline" color="blue" fw={700}>
-                                                        {local.code}
-                                                    </Badge>
-                                                </Table.Td>
-                                                <Table.Td>
-                                                    <Text fw={600} size="sm">
-                                                        {local.name}
-                                                    </Text>
-                                                    <Text size="xs" c="dimmed">
-                                                        {local.businessType}
-                                                    </Text>
-                                                </Table.Td>
-                                                <Table.Td>
-                                                    <Text size="sm">{local.building}</Text>
-                                                    <Text size="xs" c="dimmed">
-                                                        {local.level}
-                                                    </Text>
-                                                </Table.Td>
-                                                <Table.Td>
-                                                    <Text size="sm">{local.area} m²</Text>
-                                                </Table.Td>
-                                                <Table.Td>
-                                                    {local.tenantName ? (
-                                                        <Box>
-                                                            <Text size="sm" fw={500}>
-                                                                {local.tenantName}
-                                                            </Text>
-                                                            <Text size="xs" c="dimmed">
-                                                                {local.tenantMail ?? 'Sin email'}
-                                                            </Text>
-                                                        </Box>
-                                                    ) : (
-                                                        <Text size="xs" c="dimmed" fs="italic">
-                                                            Sin locatario asignado
-                                                        </Text>
-                                                    )}
-                                                </Table.Td>
-                                                <Table.Td>
-                                                    <Text fw={600} size="sm">
-                                                        ${local.monthlyRent.toLocaleString('es-MX')} MXN
-                                                    </Text>
-                                                    <Text size="xs" c="dimmed">
-                                                        + ${local.maintenanceFee.toLocaleString('es-MX')} mant.
-                                                    </Text>
-                                                </Table.Td>
-                                                <Table.Td>
-                                                    <Center>{getStatusBadge(local.status)}</Center>
-                                                </Table.Td>
-                                                <Table.Td>
-                                                    <Group gap="xs" justify="center">
-                                                        <ActionIcon
-                                                            variant="subtle"
-                                                            color="blue"
-                                                            onClick={() => handleViewDetail(local)}
-                                                            title="Ver detalles"
-                                                        >
-                                                            <IconEye size={16} />
-                                                        </ActionIcon>
-                                                        <ActionIcon
-                                                            variant="subtle"
-                                                            color="yellow"
-                                                            onClick={() => handleOpenEdit(local)}
-                                                            title="Editar"
-                                                        >
-                                                            <IconPencil size={16} />
-                                                        </ActionIcon>
-                                                        <Menu position="bottom-end" shadow="md">
-                                                            <Menu.Target>
-                                                                <ActionIcon variant="subtle" color="gray">
-                                                                    <IconDotsVertical size={16} />
-                                                                </ActionIcon>
-                                                            </Menu.Target>
-                                                            <Menu.Dropdown>
-                                                                <Menu.Item
-                                                                    leftSection={<IconEye size={14} />}
-                                                                    onClick={() => handleViewDetail(local)}
-                                                                >
-                                                                    Ver detalles
-                                                                </Menu.Item>
-                                                                <Menu.Item
-                                                                    leftSection={<IconPencil size={14} />}
-                                                                    onClick={() => handleOpenEdit(local)}
-                                                                >
-                                                                    Editar local
-                                                                </Menu.Item>
-                                                                <Menu.Divider />
-                                                                <Menu.Item
-                                                                    color="red"
-                                                                    leftSection={<IconTrash size={14} />}
-                                                                    onClick={() => handleDeleteSingle(local.id)}
-                                                                >
-                                                                    Eliminar
-                                                                </Menu.Item>
-                                                            </Menu.Dropdown>
-                                                        </Menu>
-                                                    </Group>
-                                                </Table.Td>
-                                            </Table.Tr>
-                                        ))
-                                    )}
-                                </Table.Tbody>
-                            </Table>
-                        </Table.ScrollContainer>
-                    </Card>
-                ) : (
-                    /* Grid / Cards View */
-                    <SimpleGrid cols={{ base: 1, sm: 2, lg: 3 }} spacing="lg">
-                        {filteredLocales.length === 0 ? (
-                            <Card withBorder radius="md" p="xl" style={{ gridColumn: '1 / -1' }} ta="center">
-                                <Flex direction="column" align="center" gap="xs">
-                                    <IconAlertCircle size={36} color="gray" />
-                                    <Text c="dimmed">No hay locales que coincidan con los criterios de búsqueda.</Text>
-                                </Flex>
-                            </Card>
-                        ) : (
-                            filteredLocales.map((local) => (
-                                <Card
-                                    key={local.code}
-                                    withBorder
-                                    radius="md"
-                                    padding="lg"
-                                    style={{
-                                        display: 'flex',
-                                        flexDirection: 'column',
-                                        justifyContent: 'space-between',
-                                        transition: 'transform 0.2s ease, box-shadow 0.2s ease',
-                                    }}
-                                >
-                                    <Box>
-                                        <Group justify="space-between" mb="xs">
-                                            <Badge variant="outline" color="blue" size="lg" fw={700}>
-                                                {local.code}
-                                            </Badge>
-                                            <Group gap="xs">
-                                                {getStatusBadge(local.status)}
-                                                <Menu position="bottom-end">
-                                                    <Menu.Target>
-                                                        <ActionIcon variant="subtle" color="gray" size="sm">
-                                                            <IconDotsVertical size={16} />
-                                                        </ActionIcon>
-                                                    </Menu.Target>
-                                                    <Menu.Dropdown>
-                                                        <Menu.Item
-                                                            leftSection={<IconEye size={14} />}
-                                                            onClick={() => handleViewDetail(local)}
-                                                        >
-                                                            Ver detalles
-                                                        </Menu.Item>
-                                                        <Menu.Item
-                                                            leftSection={<IconPencil size={14} />}
-                                                            onClick={() => handleOpenEdit(local)}
-                                                        >
-                                                            Editar
-                                                        </Menu.Item>
-                                                        <Menu.Divider />
-                                                        <Menu.Item
-                                                            color="red"
-                                                            leftSection={<IconTrash size={14} />}
-                                                            onClick={() => handleDeleteSingle(local.id)}
-                                                        >
-                                                            Eliminar
-                                                        </Menu.Item>
-                                                    </Menu.Dropdown>
-                                                </Menu>
-                                            </Group>
-                                        </Group>
-
-                                        <Title order={4} fw={600} lineClamp={1}>
-                                            {local.name}
-                                        </Title>
-                                        <Text size="xs" c="dimmed" mb="md">
-                                            {local.businessType}
-                                        </Text>
-
-                                        <SimpleGrid cols={2} spacing="xs" mb="md">
-                                            <Flex align="center" gap={6}>
-                                                <IconBuilding size={16} color="gray" />
-                                                <Box>
-                                                    <Text size="xs" c="dimmed">Edificio</Text>
-                                                    <Text size="xs" fw={600}>{local.building}</Text>
-                                                </Box>
-                                            </Flex>
-
-                                            <Flex align="center" gap={6}>
-                                                <IconMaximize size={16} color="gray" />
-                                                <Box>
-                                                    <Text size="xs" c="dimmed">Superficie</Text>
-                                                    <Text size="xs" fw={600}>{local.area} m²</Text>
-                                                </Box>
-                                            </Flex>
-
-                                            <Flex align="center" gap={6}>
-                                                <IconReceipt size={16} color="gray" />
-                                                <Box>
-                                                    <Text size="xs" c="dimmed">Renta Mensual</Text>
-                                                    <Text size="xs" fw={600}>${local.monthlyRent.toLocaleString('es-MX')}</Text>
-                                                </Box>
-                                            </Flex>
-
-                                            <Flex align="center" gap={6}>
-                                                <IconBuildingStore size={16} color="gray" />
-                                                <Box>
-                                                    <Text size="xs" c="dimmed">Nivel</Text>
-                                                    <Text size="xs" fw={600}>{local.level}</Text>
-                                                </Box>
-                                            </Flex>
-                                        </SimpleGrid>
-
-                                        {local.tenantName ? (
-                                            <Card withBorder radius="sm" p="xs" bg="var(--mantine-color-gray-0)" mb="md">
-                                                <Flex align="center" gap="xs">
-                                                    <ThemeIcon size="sm" radius="xl" color="blue" variant="light">
-                                                        <IconUser size={12} />
-                                                    </ThemeIcon>
-                                                    <Box style={{ overflow: 'hidden' }}>
-                                                        <Text size="xs" fw={600} lineClamp={1}>
+                                            <Table.Td>
+                                                <Badge variant="outline" color="blue" fw={700}>
+                                                    {local.code}
+                                                </Badge>
+                                            </Table.Td>
+                                            <Table.Td>
+                                                <Text fw={600} size="sm">
+                                                    {local.name}
+                                                </Text>
+                                                <Text size="xs" c="dimmed">
+                                                    {local.businessType}
+                                                </Text>
+                                            </Table.Td>
+                                            <Table.Td>
+                                                <Text size="sm">{local.building}</Text>
+                                                <Text size="xs" c="dimmed">
+                                                    {local.level}
+                                                </Text>
+                                            </Table.Td>
+                                            <Table.Td>
+                                                <Text size="sm">{local.area} m²</Text>
+                                            </Table.Td>
+                                            <Table.Td>
+                                                {local.tenantName ? (
+                                                    <Box>
+                                                        <Text size="sm" fw={500}>
                                                             {local.tenantName}
                                                         </Text>
-                                                        <Text size="xs" c="dimmed" lineClamp={1}>
-                                                            {local.tenantMail}
+                                                        <Text size="xs" c="dimmed">
+                                                            {local.tenantMail ?? 'Sin email'}
                                                         </Text>
                                                     </Box>
-                                                </Flex>
-                                            </Card>
-                                        ) : (
-                                            <Card withBorder radius="sm" p="xs" bg="var(--mantine-color-blue-0)" mb="md">
-                                                <Text size="xs" c="blue" ta="center" fw={500}>
-                                                    Disponible para arrendamiento
+                                                ) : (
+                                                    <Text size="xs" c="dimmed" fs="italic">
+                                                        Sin locatario asignado
+                                                    </Text>
+                                                )}
+                                            </Table.Td>
+                                            <Table.Td>
+                                                <Text fw={600} size="sm">
+                                                    ${local.monthlyRent.toLocaleString('es-MX')} MXN
                                                 </Text>
-                                            </Card>
-                                        )}
-                                    </Box>
-
-                                    <Group gap="xs" mt="sm">
-                                        <Button
-                                            variant="light"
-                                            color="blue"
-                                            fullWidth
-                                            size="xs"
-                                            leftSection={<IconEye size={14} />}
-                                            onClick={() => handleViewDetail(local)}
-                                        >
-                                            Detalles
-                                        </Button>
-                                        <Button
-                                            variant="outline"
-                                            color="gray"
-                                            size="xs"
-                                            leftSection={<IconPencil size={14} />}
-                                            onClick={() => handleOpenEdit(local)}
-                                        >
-                                            Editar
-                                        </Button>
-                                    </Group>
-                                </Card>
-                            ))
-                        )}
-                    </SimpleGrid>
-                )}
+                                                <Text size="xs" c="dimmed">
+                                                    + ${local.maintenanceFee.toLocaleString('es-MX')} mant.
+                                                </Text>
+                                            </Table.Td>
+                                            <Table.Td>
+                                                <Center>{getStatusBadge(local.status)}</Center>
+                                            </Table.Td>
+                                            <Table.Td>
+                                                <Group gap="xs" justify="center">
+                                                    <ActionIcon variant="subtle" color="blue" onClick={() => handleViewDetail(local)} title="Ver detalles">
+                                                        <IconEye size={16} />
+                                                    </ActionIcon>
+                                                    <ActionIcon variant="subtle" color="yellow" onClick={() => handleOpenEdit(local)} title="Editar">
+                                                        <IconPencil size={16} />
+                                                    </ActionIcon>
+                                                    <Menu position="bottom-end" shadow="md">
+                                                        <Menu.Target>
+                                                            <ActionIcon variant="subtle" color="gray">
+                                                                <IconDotsVertical size={16} />
+                                                            </ActionIcon>
+                                                        </Menu.Target>
+                                                        <Menu.Dropdown>
+                                                            <Menu.Item leftSection={<IconEye size={14} />} onClick={() => handleViewDetail(local)}>
+                                                                Ver detalles
+                                                            </Menu.Item>
+                                                            <Menu.Item leftSection={<IconPencil size={14} />} onClick={() => handleOpenEdit(local)}>
+                                                                Editar local
+                                                            </Menu.Item>
+                                                            <Menu.Divider />
+                                                            <Menu.Item color="red" leftSection={<IconTrash size={14} />} onClick={() => handleDeleteSingle(local.id)}>
+                                                                Eliminar
+                                                            </Menu.Item>
+                                                        </Menu.Dropdown>
+                                                    </Menu>
+                                                </Group>
+                                            </Table.Td>
+                                        </Table.Tr>
+                                    ))
+                                )}
+                            </Table.Tbody>
+                        </Table>
+                    </Table.ScrollContainer>
+                </Card>
+                
 
                 {/* Floating Action Bar on Selection */}
                 <ActionBar opened={selection.length > 0} onClose={() => setSelection([])} shadow="md">
