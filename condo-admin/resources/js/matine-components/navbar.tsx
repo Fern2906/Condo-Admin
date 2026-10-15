@@ -1,4 +1,4 @@
-import {Burger,Container,Divider,Drawer,ScrollArea,Group} from '@mantine/core';
+import { Burger, Container, Divider, Drawer, ScrollArea, Group, FloatingIndicator } from '@mantine/core';
 import { Link } from '@inertiajs/react';
 import { useDisclosure } from '@mantine/hooks';
 import { useState } from 'react';
@@ -11,17 +11,25 @@ interface NavbarLink {
 }
 
 interface NavbarProps {
-    links: NavbarLink[]
+    links: NavbarLink[];
 }
 
-export default function Navbar({links} : Readonly<NavbarProps>) {
+export default function Navbar({ links }: Readonly<NavbarProps>) {
     const [opened, { toggle, close }] = useDisclosure(false);
-    const [active, setActive] = useState(links[0].link);
+    const [active, setActive] = useState(links[0]?.link ?? '');
+
+    const [rootRef, setRootRef] = useState<HTMLDivElement | null>(null);
+    const [controlsRefs, setControlsRefs] = useState<Record<string, HTMLAnchorElement | null>>({});
+
+    const setControlRef = (link: string) => (node: HTMLAnchorElement | null) => {
+        setControlsRefs((prev) => ({ ...prev, [link]: node }));
+    };
 
     const items = links.map((item) => (
         <Link
             key={item.label}
             href={item.link}
+            ref={setControlRef(item.link)}
             className={classes.link}
             data-active={active === item.link || undefined}
             onClick={() => {
@@ -32,6 +40,7 @@ export default function Navbar({links} : Readonly<NavbarProps>) {
             {item.label}
         </Link>
     ));
+
     return (
         <header className={classes.header}>
             <Container size="md" className={classes.inner}>
@@ -39,8 +48,13 @@ export default function Navbar({links} : Readonly<NavbarProps>) {
                     <span>CONDO ADMIN</span>
                 </Link>
 
-                <Group gap={5} visibleFrom="xs">
+                <Group gap={5} visibleFrom="xs" ref={setRootRef} style={{ position: 'relative' }}>
                     {items}
+                    <FloatingIndicator
+                        target={controlsRefs[active]}
+                        parent={rootRef}
+                        className={classes.indicator}
+                    />
                 </Group>
 
                 <Burger
