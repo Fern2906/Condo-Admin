@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import { ActionBar, Badge, Box, Button, Card, Center, Checkbox, Flex, Stack, Table, Text, Title } from '@mantine/core';
+import { ActionBar, ActionIcon, Badge, Box, Button, Card, Center, Checkbox, Flex, Grid, Group, Menu, SegmentedControl, Select, Stack, Table, Text, TextInput, ThemeIcon, Title } from '@mantine/core';
 import { Head } from '@inertiajs/react';
-import { IconBan, IconPencil, IconPlus, IconTrash, IconUser } from '@tabler/icons-react';
-import { TittlePage } from '@/matine-components/tittle-page';
+import { IconBan, IconDotsVertical, IconEye, IconLayoutGrid, IconList, IconPencil, IconPlus, IconSearch, IconTrash, IconUser, IconX } from '@tabler/icons-react';
+import { local } from '@/routes/storage';
 
 interface UserData {
     userName: string;
@@ -68,14 +68,6 @@ const usersData: UserData[] = [
     },
 ];
 
-const elements = [
-  { position: 6, mass: 12.011, symbol: 'C', name: 'Carbon' },
-  { position: 7, mass: 14.007, symbol: 'N', name: 'Nitrogen' },
-  { position: 39, mass: 88.906, symbol: 'Y', name: 'Yttrium' },
-  { position: 56, mass: 137.33, symbol: 'Ba', name: 'Barium' },
-  { position: 58, mass: 140.12, symbol: 'Ce', name: 'Cerium' },
-];
-
 export default function UserList() {
   const [selection, setSelection] = useState<string[]>([]);
 
@@ -94,10 +86,7 @@ export default function UserList() {
   const rows = usersData.map((user) => (
     <Table.Tr key={user.userMail}>
         <Table.Td>
-            <Checkbox
-                checked={selection.includes(user.userMail)}
-                onChange={() => toggleRow(user.userMail)}
-            />
+            <Checkbox checked={selection.includes(user.userMail)} onChange={() => toggleRow(user.userMail)}/>
         </Table.Td>
         <Table.Td>{user.userName}</Table.Td>
         <Table.Td>{user.userMail}</Table.Td>
@@ -120,6 +109,35 @@ export default function UserList() {
                 </Badge>
             </Center>
         </Table.Td>
+        <Table.Td>
+            <Group gap="xs" justify="center" wrap="nowrap">
+                <ActionIcon variant="subtle" color="blue"  title="Ver detalles">
+                    <IconEye size={16} />
+                </ActionIcon>
+                <ActionIcon variant="subtle" color="yellow"  title="Editar">
+                    <IconPencil size={16} />
+                </ActionIcon>
+                <Menu position="bottom-end" shadow="md">
+                    <Menu.Target>
+                        <ActionIcon variant="subtle" color="gray">
+                            <IconDotsVertical size={16} />
+                        </ActionIcon>
+                    </Menu.Target>
+                    <Menu.Dropdown>
+                        <Menu.Item leftSection={<IconEye size={14} />}>
+                            Ver detalles
+                        </Menu.Item>
+                        <Menu.Item leftSection={<IconPencil size={14} />}>
+                            Editar local
+                        </Menu.Item>
+                        <Menu.Divider />
+                        <Menu.Item color="red" leftSection={<IconTrash size={14} />} >
+                            Eliminar
+                        </Menu.Item>
+                    </Menu.Dropdown>
+                </Menu>
+            </Group>
+        </Table.Td>
     </Table.Tr>
 ));
 
@@ -127,11 +145,112 @@ export default function UserList() {
     <>
         <Head title="Lista de usuarios" />
 
-        <Stack gap={"xl"} p={"md"}>
-            <Flex justify='space-between' align='center'>
-                <TittlePage title='Lista de usuarios' message='Gestión de usuarios del condominio' icon={<IconUser size={40} color='var(--mantine-color-orange-8)'/>} />
-                <Button leftSection={<IconPlus size={18} />} variant="filled" color="blue">Nuevo Usuario</Button>
+
+        <Stack gap={"xl"} p={"md"} w="100%" h="100%">
+            <Flex justify="space-between" align="center" wrap="wrap" gap="md">
+                <Flex gap="md" align="center">
+                    <Center>
+                        <ThemeIcon size={52} radius="md" color="green" variant="light">
+                            <IconUser size={32} />
+                        </ThemeIcon>
+                    </Center>
+                    <Box>
+                    <Title order={2} fw={600}>
+                        Gestión de Usuarios
+                    </Title>
+                    <Text c="dimmed" size="sm" mt={2}>
+                        Administra los datos y estados de los locatarios
+                    </Text>
+                </Box>
             </Flex>
+
+            <Button leftSection={<IconPlus size={18} />} color="blue" radius="md"// onClick={}
+            >
+                Nuevo Usuario
+            </Button>
+            </Flex>
+
+            <Card withBorder radius="md" padding="md">
+                <Grid align="center" gap="md">
+                    <Grid.Col span={{ base: 12, md: 5 }}>
+                        <TextInput
+                            placeholder="Buscar por código, nombre, edificio o locatario..."
+                            leftSection={<IconSearch size={16} />}
+                            // value={searchQuery}
+                            // onChange={(e) => setSearchQuery(e.currentTarget.value)}
+                            // rightSection={
+                            //     searchQuery ? (
+                            //         <ActionIcon size="xs" variant="subtle" onClick={() => setSearchQuery('')}>
+                            //             <IconX size={12} />
+                            //         </ActionIcon>
+                            //     ) : null
+                            // }
+                        />
+                    </Grid.Col>
+
+                    <Grid.Col span={{ base: 6, sm: 3, md: 2.5 }}>
+                        <Select
+                            placeholder="Estado"
+                            clearable
+                            // value={filterStatus}
+                            // onChange={setFilterStatus}
+                            // data={[
+                            //     { value: 'todos', label: 'Todos los estados' },
+                            //     { value: 'Ocupado', label: 'Ocupado' },
+                            //     { value: 'Disponible', label: 'Disponible' },
+                            //     { value: 'Mantenimiento', label: 'Mantenimiento' },
+                            //     { value: 'Reservado', label: 'Reservado' },
+                            // ]}
+                        />
+                    </Grid.Col>
+
+                    <Grid.Col span={{ base: 6, sm: 3, md: 2.5 }}>
+                        <Select
+                            placeholder="Edificio"
+                            clearable
+                            // value={filterBuilding}
+                            // onChange={setFilterBuilding}
+                            data={[
+                                { value: 'todos', label: 'Todos los edificios' },
+                                { value: 'Torre A', label: 'Torre A' },
+                                { value: 'Torre B', label: 'Torre B' },
+                                { value: 'Torre C', label: 'Torre C' },
+                                { value: 'Plaza Central', label: 'Plaza Central' },
+                            ]}
+                        />
+                    </Grid.Col>
+
+                    <Grid.Col span={{ base: 12, sm: 6, md: 2 }}>
+                        <Flex justify={{ base: 'flex-start', sm: 'flex-end' }}>
+                            <SegmentedControl
+                                // value={viewMode}
+                                // onChange={(value) => setViewMode(value as 'table' | 'grid')}
+                                data={[
+                                    {
+                                        value: 'table',
+                                        label: (
+                                            <Center style={{ gap: 6 }}>
+                                                <IconList size={16} />
+                                                <Text size="xs">Tabla</Text>
+                                            </Center>
+                                        ),
+                                    },
+                                    {
+                                        value: 'grid',
+                                        label: (
+                                            <Center style={{ gap: 6 }}>
+                                                <IconLayoutGrid size={16} />
+                                                <Text size="xs">Tarjetas</Text>
+                                            </Center>
+                                        ),
+                                    },
+                                ]}
+                            />
+                        </Flex>
+                    </Grid.Col>
+                </Grid>
+            </Card>
+
 
             <Card withBorder radius="md" padding="lg" w="100%" h="100%">
                 <Table.ScrollContainer  minWidth={300} maxHeight={500} >
@@ -155,6 +274,7 @@ export default function UserList() {
                             <Table.Th>Propiedad</Table.Th>
                             <Table.Th>Estado Usuario</Table.Th>
                             <Table.Th>Estado Propiedad</Table.Th>
+                            <Table.Th ta="center">Acciones</Table.Th>
                         </Table.Tr>
                         </Table.Thead>
                         <Table.Tbody>{rows}</Table.Tbody>
