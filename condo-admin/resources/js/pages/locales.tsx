@@ -3,6 +3,7 @@ import { ActionBar, ActionIcon, Badge, Box, Button, Card, Center, Checkbox, Draw
 import { useDisclosure } from '@mantine/hooks';
 import { Head } from '@inertiajs/react';
 import { IconAlertCircle, IconBuilding, IconBuildingStore, IconCalendar, IconCheck, IconDotsVertical, IconEye, IconLayoutGrid, IconList, IconMail, IconMaximize, IconPencil, IconPhone, IconPlus, IconReceipt, IconSearch, IconTools, IconTrash, IconUser, IconX, } from '@tabler/icons-react';
+import { TittlePage } from '@/matine-components/tittle-page';
 
 export interface LocalData {
     id: string;
@@ -320,23 +321,8 @@ export default function LocalesPage() {
             <Head title="Gestión de Locales" />
 
             <Stack gap="xl" p="md" w="100%" h="100%">
-                {/* Header Section */}
-                <Flex justify="space-between" align="center" wrap="wrap" gap="md">
-                    <Flex gap="md" align="center">
-                        <Center>
-                            <ThemeIcon size={52} radius="md" color="blue" variant="light">
-                                <IconBuildingStore size={32} />
-                            </ThemeIcon>
-                        </Center>
-                        <Box>
-                            <Title order={2} fw={600}>
-                                Gestión de Locales
-                            </Title>
-                            <Text c="dimmed" size="sm" mt={2}>
-                                Control de ocupación, contratos y especificaciones de locales comerciales
-                            </Text>
-                        </Box>
-                    </Flex>
+                <Flex justify='space-between' align='center'>
+                    <TittlePage title='Gestión de Locales' message='Control de ocupación, contratos y especificaciones de locales comerciales' icon={<IconBuildingStore size={40} color='var(--mantine-color-blue-6)'/>} />
 
                     <Button
                         leftSection={<IconPlus size={18} />}
@@ -347,8 +333,6 @@ export default function LocalesPage() {
                         Nuevo Local
                     </Button>
                 </Flex>
-
-                {/* Metrics / KPI Summary */}
                 <SimpleGrid cols={{ base: 1, sm: 2, md: 4 }} spacing="md">
                     <Card withBorder radius="md" padding="md">
                         <Group justify="space-between" align="center">

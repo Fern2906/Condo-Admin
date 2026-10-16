@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { ActionBar, Badge, Box, Button, Card, Center, Checkbox, Flex, Stack, Table, Text, Title } from '@mantine/core';
 import { Head } from '@inertiajs/react';
-import { IconBan, IconPencil, IconTrash, IconUser } from '@tabler/icons-react';
+import { IconBan, IconPencil, IconPlus, IconTrash, IconUser } from '@tabler/icons-react';
+import { TittlePage } from '@/matine-components/tittle-page';
 
 interface UserData {
     userName: string;
@@ -127,21 +128,12 @@ export default function UserList() {
         <Head title="Lista de usuarios" />
 
         <Stack gap={"xl"} p={"md"}>
-            <Flex gap="md" align="center">
-                <Center>
-                    <IconUser size={40} />
-                </Center>
-                <Box>
-                    <Title order={2} fw={600}>
-                        Lista de usuarios   
-                    </Title>
-                    <Text c="dimmed" size="sm" mt={4}>
-                            Gestión de usuarios del condominio
-                    </Text>
-                </Box>
+            <Flex justify='space-between' align='center'>
+                <TittlePage title='Lista de usuarios' message='Gestión de usuarios del condominio' icon={<IconUser size={40} color='var(--mantine-color-orange-8)'/>} />
+                <Button leftSection={<IconPlus size={18} />} variant="filled" color="blue">Nuevo Usuario</Button>
             </Flex>
 
-            <Card withBorder radius="md" padding="lg" w="100%" h="100%">                
+            <Card withBorder radius="md" padding="lg" w="100%" h="100%">
                 <Table.ScrollContainer  minWidth={300} maxHeight={500} >
                     <Table striped highlightOnHover>
                         <Table.Thead>
@@ -173,7 +165,7 @@ export default function UserList() {
             <ActionBar opened={selection.length > 0} onClose={() => setSelection([])} shadow="md">
                 <Text visibleFrom='xs' size="sm">{selection.length} seleccionados</Text>
                 <ActionBar.Divider />
-                
+
                 <Button variant="filled" color="red" px={{ base: 'xs', sm: 'md' }}>
                     <IconTrash size={14} />
                     <Box visibleFrom="xs">Eliminar</Box>
