@@ -4,6 +4,8 @@ import { useDisclosure } from '@mantine/hooks';
 import { Head } from '@inertiajs/react';
 import { IconAlertCircle, IconBuilding, IconBuildingStore, IconCalendar, IconCheck, IconDotsVertical, IconEye, IconLayoutGrid, IconList, IconMail, IconMaximize, IconPencil, IconPhone, IconPlus, IconReceipt, IconSearch, IconTools, IconTrash, IconUser, IconX, } from '@tabler/icons-react';
 import { TittlePage } from '@/matine-components/tittle-page';
+import { FilterBox } from '@/matine-components/filter-box';
+import { BulkActionBar } from '@/matine-components/BulkActionBar';
 
 export interface LocalData {
     id: string;
@@ -185,13 +187,27 @@ const getStatusBadge = (status: LocalData['status']) => {
 export default function LocalesPage() {
     const [localesList, setLocalesList] = useState<LocalData[]>(initialLocales);
     const [selection, setSelection] = useState<string[]>([]);
-    const [searchQuery, setSearchQuery] = useState('');
-    const [filterStatus, setFilterStatus] = useState<string | null>(null);
-    const [filterBuilding, setFilterBuilding] = useState<string | null>(null);
 
     const [createModalOpened, { open: openCreateModal, close: closeCreateModal }] = useDisclosure(false);
     const [detailDrawerOpened, { open: openDetailDrawer, close: closeDetailDrawer }] = useDisclosure(false);
     const [editModalOpened, { open: openEditModal, close: closeEditModal }] = useDisclosure(false);
+
+    const [status, setStatus] = useState<string[]>([]);
+    const [building, setBuilding] = useState<string[]>([]);
+    const [search, setSearch] = useState('');
+
+    const statusData = [
+        { value: 'Ocupado', label: 'Ocupado' },
+        { value: 'Disponible', label: 'Disponible' },
+        { value: 'Mantenimiento', label: 'Mantenimiento' },
+        { value: 'Reservado', label: 'Reservado' },
+    ];
+
+    const buildingData = [
+        { value: 'Torre A', label: 'Torre A' },
+        { value: 'Torre B', label: 'Torre B' },
+        { value: 'Torre C', label: 'Torre C' },
+    ];
     const [selectedLocal, setSelectedLocal] = useState<LocalData | null>(null);
 
     const [newLocal, setNewLocal] = useState<Partial<LocalData>>({
@@ -211,18 +227,18 @@ export default function LocalesPage() {
     const filteredLocales = useMemo(() => {
         return localesList.filter((local) => {
             const matchesSearch =
-                searchQuery === '' ||
-                local.code.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                local.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                (local.tenantName && local.tenantName.toLowerCase().includes(searchQuery.toLowerCase())) ||
-                local.building.toLowerCase().includes(searchQuery.toLowerCase());
+                search === '' ||
+                local.code.toLowerCase().includes(search.toLowerCase()) ||
+                local.name.toLowerCase().includes(search.toLowerCase()) ||
+                (local.tenantName && local.tenantName.toLowerCase().includes(search.toLowerCase())) ||
+                local.building.toLowerCase().includes(search.toLowerCase());
 
-            const matchesStatus = !filterStatus || filterStatus === 'todos' || local.status === filterStatus;
-            const matchesBuilding = !filterBuilding || filterBuilding === 'todos' || local.building === filterBuilding;
+            const matchesStatus = !status || status.length === 0 || status.includes(local.status);
+            const matchesBuilding = !building || building.length === 0 || building.includes(local.building);
 
             return matchesSearch && matchesStatus && matchesBuilding;
         });
-    }, [localesList, searchQuery, filterStatus, filterBuilding]);
+    }, [localesList, search, status, building]);
 
     const totalLocales = localesList.length;
     const occupiedCount = localesList.filter((l) => l.status === 'Ocupado').length;
@@ -252,7 +268,12 @@ export default function LocalesPage() {
         setEditFormData({ ...local });
         openEditModal();
     };
-
+    const handleMarkAsAvailable = () => {
+    setLocalesList((prev) =>
+        prev.map((l) => (selection.includes(l.code) ? { ...l, status: "Disponible" } : l))
+    );
+    setSelection([]);
+    };
     const handleSaveEdit = () => {
         if (!selectedLocal) return;
         setLocalesList((prev) =>
@@ -302,6 +323,7 @@ export default function LocalesPage() {
             status: 'Disponible',
         });
     };
+
 
     return (
         <>
@@ -399,57 +421,14 @@ export default function LocalesPage() {
                     </Card>
                 </SimpleGrid>
 
-                <Card withBorder radius="md" padding="md">
-                    <Grid align="center" gap="md">
-                        <Grid.Col span={{ base: 12, md: 5 }}>
-                            <TextInput
-                                placeholder="Buscar por código, nombre, edificio o locatario..."
-                                leftSection={<IconSearch size={16} />}
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.currentTarget.value)}
-                                rightSection={
-                                    searchQuery ? (
-                                        <ActionIcon size="xs" variant="subtle" onClick={() => setSearchQuery('')}>
-                                            <IconX size={12} />
-                                        </ActionIcon>
-                                    ) : null
-                                }
-                            />
-                        </Grid.Col>
-
-                        <Grid.Col span={{ base: 6, sm: 3, md: 2.5 }}>
-                            <Select
-                                placeholder="Estado"
-                                clearable
-                                value={filterStatus}
-                                onChange={setFilterStatus}
-                                data={[
-                                    { value: 'todos', label: 'Todos los estados' },
-                                    { value: 'Ocupado', label: 'Ocupado' },
-                                    { value: 'Disponible', label: 'Disponible' },
-                                    { value: 'Mantenimiento', label: 'Mantenimiento' },
-                                    { value: 'Reservado', label: 'Reservado' },
-                                ]}
-                            />
-                        </Grid.Col>
-
-                        <Grid.Col span={{ base: 6, sm: 3, md: 2.5 }}>
-                            <Select
-                                placeholder="Edificio"
-                                clearable
-                                value={filterBuilding}
-                                onChange={setFilterBuilding}
-                                data={[
-                                    { value: 'todos', label: 'Todos los edificios' },
-                                    { value: 'Torre A', label: 'Torre A' },
-                                    { value: 'Torre B', label: 'Torre B' },
-                                    { value: 'Torre C', label: 'Torre C' },
-                                    { value: 'Plaza Central', label: 'Plaza Central' },
-                                ]}
-                            />
-                        </Grid.Col>
-                    </Grid>
-                </Card>
+                <FilterBox searchQuery={search}
+                    setSearchQuery={setSearch}
+                    filterStatus={status}
+                    setFilterStatus={setStatus}
+                    filterBuilding={building}
+                    setFilterBuilding={setBuilding}
+                    statusOptions={statusData}
+                    buildingOptions={buildingData} />
 
                 <Card withBorder radius="md" padding="lg" w="100%">
                     <Table.ScrollContainer minWidth={850} maxHeight={600}>
@@ -582,35 +561,13 @@ export default function LocalesPage() {
                 </Card>
 
 
-                <ActionBar opened={selection.length > 0} onClose={() => setSelection([])} shadow="md">
-                    <Text visibleFrom="xs" size="sm">
-                        {selection.length} locales seleccionados
-                    </Text>
-                    <ActionBar.Divider />
-
-                    <Button variant="filled" color="red" px={{ base: 'xs', sm: 'md' }} onClick={handleDeleteSelected}>
-                        <IconTrash size={14} />
-                        <Box visibleFrom="xs" ml={6}>
-                            Eliminar
-                        </Box>
-                    </Button>
-
-                    <Button variant="filled" color="blue" px={{ base: 'xs', sm: 'md' }}
-                        onClick={() => {
-                            setLocalesList((prev) =>
-                                prev.map((l) => (selection.includes(l.code) ? { ...l, status: 'Disponible' } : l))
-                            );
-                            setSelection([]);
-                        }}
-                    >
-                        <IconCheck size={14} />
-                        <Box visibleFrom="xs" ml={6}>
-                            Marcar Disponible
-                        </Box>
-                    </Button>
-
-                    <ActionBar.CloseButton />
-                </ActionBar>
+                <BulkActionBar
+                    selection={selection}
+                    onClearSelection={() => setSelection([])}
+                    onDeleteSelected={handleDeleteSelected}
+                    onMarkAsAvailable={handleMarkAsAvailable}
+                    itemName="locales"
+                />
             </Stack>
 
             <Modal opened={createModalOpened} onClose={closeCreateModal}
