@@ -3,6 +3,7 @@ import { ActionBar, ActionIcon, Badge, Box, Button, Card, Center, Checkbox, Flex
 import { Head } from '@inertiajs/react';
 import { IconBan, IconDotsVertical, IconEye, IconLayoutGrid, IconList, IconPencil, IconPlus, IconSearch, IconTrash, IconUser, IconX } from '@tabler/icons-react';
 import { local } from '@/routes/storage';
+import { TittlePage } from '@/matine-components/tittle-page';
 
 interface UserData {
     userName: string;
@@ -148,26 +149,8 @@ export default function UserList() {
 
         <Stack gap={"xl"} p={"md"} w="100%" h="100%">
             <Flex justify="space-between" align="center" wrap="wrap" gap="md">
-                <Flex gap="md" align="center">
-                    <Center>
-                        <ThemeIcon size={52} radius="md" color="green" variant="light">
-                            <IconUser size={32} />
-                        </ThemeIcon>
-                    </Center>
-                    <Box>
-                    <Title order={2} fw={600}>
-                        Gestión de Usuarios
-                    </Title>
-                    <Text c="dimmed" size="sm" mt={2}>
-                        Administra los datos y estados de los locatarios
-                    </Text>
-                </Box>
-            </Flex>
-
-            <Button leftSection={<IconPlus size={18} />} color="blue" radius="md"// onClick={}
-            >
-                Nuevo Usuario
-            </Button>
+                <TittlePage title="Gestión de Usuarios" message="Administra los datos y estados de los locatarios" icon={<IconUser size={40} color='var(--mantine-color-blue-8)'/>} />
+                <Button leftSection={<IconPlus size={18} />} color="blue" radius="md">Nuevo Usuario</Button>
             </Flex>
 
             <Card withBorder radius="md" padding="md">
@@ -219,38 +202,8 @@ export default function UserList() {
                             ]}
                         />
                     </Grid.Col>
-
-                    <Grid.Col span={{ base: 12, sm: 6, md: 2 }}>
-                        <Flex justify={{ base: 'flex-start', sm: 'flex-end' }}>
-                            <SegmentedControl
-                                // value={viewMode}
-                                // onChange={(value) => setViewMode(value as 'table' | 'grid')}
-                                data={[
-                                    {
-                                        value: 'table',
-                                        label: (
-                                            <Center style={{ gap: 6 }}>
-                                                <IconList size={16} />
-                                                <Text size="xs">Tabla</Text>
-                                            </Center>
-                                        ),
-                                    },
-                                    {
-                                        value: 'grid',
-                                        label: (
-                                            <Center style={{ gap: 6 }}>
-                                                <IconLayoutGrid size={16} />
-                                                <Text size="xs">Tarjetas</Text>
-                                            </Center>
-                                        ),
-                                    },
-                                ]}
-                            />
-                        </Flex>
-                    </Grid.Col>
                 </Grid>
             </Card>
-
 
             <Card withBorder radius="md" padding="lg" w="100%" h="100%">
                 <Table.ScrollContainer  minWidth={300} maxHeight={500} >

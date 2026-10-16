@@ -309,30 +309,8 @@ export default function LocalesPage() {
 
             <Stack gap="xl" p="md" w="100%" h="100%">
                 <Flex justify="space-between" align="center" wrap="wrap" gap="md">
-                    <Flex gap="md" align="center">
-                        <Center>
-                            <ThemeIcon size={52} radius="md" color="blue" variant="light">
-                                <IconBuildingStore size={32} />
-                            </ThemeIcon>
-                        </Center>
-                        <Box>
-                            <Title order={2} fw={600}>
-                                Gestión de Locales
-                            </Title>
-                            <Text c="dimmed" size="sm" mt={2}>
-                                Control de ocupación, contratos y especificaciones de locales comerciales
-                            </Text>
-                        </Box>
-                    </Flex>
-
-                    <Button
-                        leftSection={<IconPlus size={18} />}
-                        color="blue"
-                        radius="md"
-                        onClick={openCreateModal}
-                    >
-                        Nuevo Local
-                    </Button>
+                    <TittlePage title='Gestión de Locales' message='Control de ocupación, contratos y especificaciones de locales comerciales' icon={<IconBuildingStore size={40} color='var(--mantine-color-blue-8)'/>} />
+                    <Button leftSection={<IconPlus size={18} />} color="blue" radius="md" onClick={openCreateModal}>Nuevo Local</Button>
                 </Flex>
 
                 <SimpleGrid cols={{ base: 1, sm: 2, md: 4 }} spacing="md">
