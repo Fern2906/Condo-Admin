@@ -5,6 +5,8 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\LocalController;
 use App\Http\Controllers\ReservacionController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\IncidenciasController;
+use App\Http\Controllers\CategoriaIncidenciaController;
 use Illuminate\Support\Facades\Route;
 
 Route::inertia('/', 'welcome')->name('home');
@@ -32,6 +34,20 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('areas-comunes', AreaComunController::class)
         ->only(['store', 'update', 'destroy'])
         ->parameters(['areas-comunes' => 'area_comun']);
+
+    /// Incidencias
+    Route::delete('incidencias', [IncidenciasController::class, 'destroyMany'])->name('incidencias.destroy-many');
+    Route::patch('incidencias/estado', [IncidenciasController::class, 'updateStatus'])->name('incidencias.update-status');
+    Route::resource('incidencias', IncidenciasController::class)
+        ->only(['index', 'store', 'update', 'destroy']);
+
+    // Categorías de incidencia (se gestionan desde la misma vista, como áreas comunes en reservaciones)
+    Route::delete('categorias-incidencia', [CategoriaIncidenciaController::class, 'destroyMany'])->name('categorias-incidencia.destroy-many');
+    Route::patch('categorias-incidencia/estado', [CategoriaIncidenciaController::class, 'updateStatus'])->name('categorias-incidencia.update-status');
+    Route::resource('categorias-incidencia', CategoriaIncidenciaController::class)
+        ->only(['index', 'store', 'update', 'destroy'])
+    ->parameters(['categorias-incidencia' => 'categoria']);
+
 });
 
 require __DIR__.'/settings.php';

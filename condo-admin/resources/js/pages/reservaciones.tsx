@@ -347,7 +347,7 @@ export default function ReservacionesPage({
                             Nueva Reservación
                         </Button>
                         <Button
-                            leftSection={<IconBuilding size={18} />}
+                            leftSection={<IconPlus size={18} />}
                             variant="outline"
                             color="blue"
                             radius="md"
@@ -411,7 +411,7 @@ export default function ReservacionesPage({
                 </SimpleGrid>
 
                 {/* Pestañas */}
-                <Group gap={0}>
+                <Group gap={0} w={'100%'}>
                     <Button
                         variant={activeTab === 'reservaciones' ? 'filled' : 'subtle'}
                         color="blue"
