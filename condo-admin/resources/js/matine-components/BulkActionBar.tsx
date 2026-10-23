@@ -2,7 +2,7 @@ import { ActionBar, Box, Button, Text } from "@mantine/core";
 import { IconCheck, IconTrash } from "@tabler/icons-react";
 
 interface BulkActionBarProps {
-  selection: string[];
+  selection: Array<string | number>;
   onClearSelection: () => void;
   onDeleteSelected: () => void;
   onMarkAsAvailable: () => void;

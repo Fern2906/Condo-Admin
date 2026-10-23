@@ -3,27 +3,65 @@ import {Box,Card,Grid,SimpleGrid,Stack,Text,Title,} from '@mantine/core';
 import {IconBell,IconBuildingStore,IconCalendarClock,IconChartBar,IconFileReport,IconHome,IconMessage,IconReceiptTax,IconReport,IconUsers,} from '@tabler/icons-react';
 import { StatCard } from '@/matine-components/stat-card';
 import { ActionButton } from '@/matine-components/action-button';
-import { locales, userList } from '@/routes/';
+import { index as localesIndex } from '@/routes/locales';
+import { index as usersIndex } from '@/routes/users';
 
-const adminActions = [
-    { title: 'Locales', icon: IconBuildingStore, color: 'blue', href: locales.url() },
-    { title: 'Locatarios', icon: IconUsers, color: 'violet', href: userList.url() },
-    { title: 'Cuotas y pagos', icon: IconReceiptTax, color: 'green' },
-    { title: 'Incidencias', icon: IconReport, color: 'red', badge: '3' },
-    { title: 'Reservaciones', icon: IconCalendarClock, color: 'orange' },
-    { title: 'Avisos', icon: IconBell, color: 'yellow', badge: '2' },
-    { title: 'Reportes', icon: IconChartBar, color: 'teal' },
-    { title: 'Mensajes', icon: IconMessage, color: 'pink', badge: '5' },
-    { title: 'Contratos', icon: IconFileReport, color: 'cyan' },
-];
+// Conteos que entrega App\Http\Controllers\DashboardController
+interface DashboardStats {
+    localesTotal: number;
+    localesOcupados: number;
+    localesDisponibles: number;
+    incidenciasAbiertas: number;
+    incidenciasSinAtender: number;
+    reservacionesHoy: number;
+    reservacionesHoyAprobadas: number;
+    avisosVigentes: number;
+    solicitudesPendientes: number;
+}
 
-const stats = [
-    {label: 'Locales ocupados',value: '24 / 30',icon: IconHome,color: 'blue',progress: 80,description: '6 locales disponibles',},
-    {label: 'Incidencias abiertas',value: '3',icon: IconReport,color: 'red',progress: 30,description: '2 pendientes de atender',},
-    {label: 'Reservaciones hoy',value: '7',icon: IconCalendarClock,color: 'orange',progress: 70,description: 'Áreas comunes',},
-];
+const percentage = (part: number, total: number) => (total > 0 ? Math.round((part / total) * 100) : 0);
+const badge = (count: number) => (count > 0 ? String(count) : undefined);
 
-export default function Dashboard() {
+export default function Dashboard({ stats: data }: { stats: DashboardStats }) {
+    const adminActions = [
+        { title: 'Locales', icon: IconBuildingStore, color: 'blue', href: localesIndex.url() },
+        { title: 'Locatarios', icon: IconUsers, color: 'violet', href: usersIndex.url() },
+        { title: 'Cuotas y pagos', icon: IconReceiptTax, color: 'green' },
+        { title: 'Incidencias', icon: IconReport, color: 'red', badge: badge(data.incidenciasAbiertas) },
+        { title: 'Reservaciones', icon: IconCalendarClock, color: 'orange' },
+        { title: 'Avisos', icon: IconBell, color: 'yellow', badge: badge(data.avisosVigentes) },
+        { title: 'Reportes', icon: IconChartBar, color: 'teal' },
+        { title: 'Mensajes', icon: IconMessage, color: 'pink', badge: badge(data.solicitudesPendientes) },
+        { title: 'Contratos', icon: IconFileReport, color: 'cyan' },
+    ];
+
+    const stats = [
+        {
+            label: 'Locales ocupados',
+            value: `${data.localesOcupados} / ${data.localesTotal}`,
+            icon: IconHome,
+            color: 'blue',
+            progress: percentage(data.localesOcupados, data.localesTotal),
+            description: `${data.localesDisponibles} locales disponibles`,
+        },
+        {
+            label: 'Incidencias abiertas',
+            value: String(data.incidenciasAbiertas),
+            icon: IconReport,
+            color: 'red',
+            progress: percentage(data.incidenciasSinAtender, data.incidenciasAbiertas),
+            description: `${data.incidenciasSinAtender} pendientes de atender`,
+        },
+        {
+            label: 'Reservaciones hoy',
+            value: String(data.reservacionesHoy),
+            icon: IconCalendarClock,
+            color: 'orange',
+            progress: percentage(data.reservacionesHoyAprobadas, data.reservacionesHoy),
+            description: `${data.reservacionesHoyAprobadas} aprobadas · áreas comunes`,
+        },
+    ];
+
     return (
         <>
             <Head title="Dashboard" />

@@ -1,14 +1,16 @@
 import { useState, useMemo } from 'react';
-import { ActionBar, ActionIcon, Badge, Box, Button, Card, Center, Checkbox, Drawer, Flex, Grid, Group, Menu, Modal, NumberInput, RingProgress, SegmentedControl, Select, SimpleGrid, Stack, Table, Text, TextInput, ThemeIcon, Title, } from '@mantine/core';
+import { ActionIcon, Badge, Box, Button, Card, Center, Checkbox, Drawer, Flex, Grid, Group, Menu, Modal, NumberInput, RingProgress, Select, SimpleGrid, Stack, Table, Text, TextInput, ThemeIcon, Title, } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
-import { Head } from '@inertiajs/react';
-import { IconAlertCircle, IconBuilding, IconBuildingStore, IconCalendar, IconCheck, IconDotsVertical, IconEye, IconLayoutGrid, IconList, IconMail, IconMaximize, IconPencil, IconPhone, IconPlus, IconReceipt, IconSearch, IconTools, IconTrash, IconUser, IconX, } from '@tabler/icons-react';
+import { Head, router, useForm } from '@inertiajs/react';
+import { IconAlertCircle, IconBuilding, IconBuildingStore, IconCalendar, IconCheck, IconDotsVertical, IconEye, IconMail, IconPencil, IconPhone, IconPlus, IconTools, IconTrash, IconUser, } from '@tabler/icons-react';
+import LocalController from '@/actions/App/Http/Controllers/LocalController';
 import { TittlePage } from '@/matine-components/tittle-page';
 import { FilterBox } from '@/matine-components/filter-box';
 import { BulkActionBar } from '@/matine-components/BulkActionBar';
 
+// Forma que entrega App\Http\Resources\LocalResource
 export interface LocalData {
-    id: string;
+    id: number;
     code: string;
     name: string;
     businessType: string;
@@ -18,158 +20,69 @@ export interface LocalData {
     monthlyRent: number;
     maintenanceFee: number;
     status: 'Ocupado' | 'Disponible' | 'Mantenimiento' | 'Reservado';
-    tenantName?: string;
-    tenantMail?: string;
-    tenantPhone?: string;
-    contractEnd?: string;
+    tenantName: string | null;
+    tenantMail: string | null;
+    tenantPhone: string | null;
+    contractEnd: string | null;
 }
 
-const initialLocales: LocalData[] = [
-    {
-        id: '1',
-        code: 'LC-01',
-        name: 'Café & Bistro Gourmet',
-        businessType: 'Gastronómico',
-        building: 'Torre A',
-        level: 'Planta Baja',
-        area: 120,
-        monthlyRent: 28000,
-        maintenanceFee: 3500,
-        status: 'Ocupado',
-        tenantName: 'Carlos Mendoza',
-        tenantMail: 'carlos.mendoza@email.com',
-        tenantPhone: '+52 55 1234 5678',
-        contractEnd: '2027-08-31',
-    },
-    {
-        id: '2',
-        code: 'LC-02',
-        name: 'Boutique Alta Moda',
-        businessType: 'Comercial / Moda',
-        building: 'Torre A',
-        level: 'Planta Baja',
-        area: 85,
-        monthlyRent: 21000,
-        maintenanceFee: 2600,
-        status: 'Ocupado',
-        tenantName: 'Ana Sofía Rivas',
-        tenantMail: 'ana.rivas@email.com',
-        tenantPhone: '+52 55 8765 4321',
-        contractEnd: '2026-12-15',
-    },
-    {
-        id: '3',
-        code: 'LC-03',
-        name: 'Espacio Comercial 03',
-        businessType: 'Comercial / Retail',
-        building: 'Torre B',
-        level: 'Planta Baja',
-        area: 65,
-        monthlyRent: 17500,
-        maintenanceFee: 2200,
-        status: 'Disponible',
-    },
-    {
-        id: '4',
-        code: 'LC-04',
-        name: 'Mini Market Express',
-        businessType: 'Conveniencia',
-        building: 'Torre C',
-        level: 'Planta Baja',
-        area: 95,
-        monthlyRent: 23000,
-        maintenanceFee: 2900,
-        status: 'Ocupado',
-        tenantName: 'Miguel Ángel Ruiz',
-        tenantMail: 'miguel.ruiz@email.com',
-        tenantPhone: '+52 55 9876 1234',
-        contractEnd: '2027-02-28',
-    },
-    {
-        id: '5',
-        code: 'LC-05',
-        name: 'Farmacia & Dermocosmética',
-        businessType: 'Salud y Farmacia',
-        building: 'Torre B',
-        level: 'Planta Baja',
-        area: 110,
-        monthlyRent: 26000,
-        maintenanceFee: 3200,
-        status: 'Ocupado',
-        tenantName: 'Elena Gómez',
-        tenantMail: 'elena.gomez@email.com',
-        tenantPhone: '+52 55 4321 8765',
-        contractEnd: '2026-11-30',
-    },
-    {
-        id: '6',
-        code: 'LC-06',
-        name: 'Local en Renovación',
-        businessType: 'Comercial',
-        building: 'Plaza Central',
-        level: 'Piso 1',
-        area: 75,
-        monthlyRent: 19000,
-        maintenanceFee: 2400,
-        status: 'Mantenimiento',
-    },
-    {
-        id: '7',
-        code: 'LC-07',
-        name: 'Estudio de Belleza y Spa',
-        businessType: 'Servicios',
-        building: 'Plaza Central',
-        level: 'Piso 1',
-        area: 90,
-        monthlyRent: 22500,
-        maintenanceFee: 2800,
-        status: 'Ocupado',
-        tenantName: 'Mariana Fuentes',
-        tenantMail: 'mariana.fuentes@email.com',
-        tenantPhone: '+52 55 3344 5566',
-        contractEnd: '2027-05-15',
-    },
-    {
-        id: '8',
-        code: 'LC-08',
-        name: 'Isla Comercial Central',
-        businessType: 'Kiosco / Accesorios',
-        building: 'Plaza Central',
-        level: 'Planta Baja',
-        area: 30,
-        monthlyRent: 12000,
-        maintenanceFee: 1500,
-        status: 'Disponible',
-    },
-    {
-        id: '9',
-        code: 'LC-09',
-        name: 'Consultorio Dental Especializado',
-        businessType: 'Salud y Servicios',
-        building: 'Torre C',
-        level: 'Piso 1',
-        area: 70,
-        monthlyRent: 18500,
-        maintenanceFee: 2300,
-        status: 'Reservado',
-        tenantName: 'Dr. Roberto Saldaña',
-        tenantMail: 'roberto.saldana@email.com',
-        tenantPhone: '+52 55 6677 8899',
-        contractEnd: '2026-09-30',
-    },
-    {
-        id: '10',
-        code: 'LC-10',
-        name: 'Local Panorámico Terraza',
-        businessType: 'Gastronómico / Bar',
-        building: 'Torre A',
-        level: 'Piso 2',
-        area: 140,
-        monthlyRent: 35000,
-        maintenanceFee: 4500,
-        status: 'Disponible',
-    },
-];
+// Campos que valida App\Http\Requests\LocalRequest
+type LocalForm = {
+    code: string;
+    name: string;
+    businessType: string;
+    building: string;
+    level: string;
+    area: number | string;
+    monthlyRent: number | string;
+    maintenanceFee: number | string;
+    status: LocalData['status'];
+    tenantName: string;
+    tenantMail: string;
+    tenantPhone: string;
+    contractEnd: string;
+};
+
+const emptyLocal: LocalForm = {
+    code: '',
+    name: '',
+    businessType: 'Comercial / Retail',
+    building: 'Torre A',
+    level: 'Planta Baja',
+    area: 60,
+    monthlyRent: 15000,
+    maintenanceFee: 2000,
+    status: 'Disponible',
+    tenantName: '',
+    tenantMail: '',
+    tenantPhone: '',
+    contractEnd: '',
+};
+
+const toForm = (local: LocalData): LocalForm => ({
+    code: local.code,
+    name: local.name,
+    businessType: local.businessType,
+    building: local.building,
+    level: local.level,
+    area: local.area,
+    monthlyRent: local.monthlyRent,
+    maintenanceFee: local.maintenanceFee,
+    status: local.status,
+    tenantName: local.tenantName ?? '',
+    tenantMail: local.tenantMail ?? '',
+    tenantPhone: local.tenantPhone ?? '',
+    contractEnd: local.contractEnd ?? '',
+});
+
+const ESTADOS: LocalData['status'][] = ['Disponible', 'Ocupado', 'Mantenimiento', 'Reservado'];
+const GIROS = ['Comercial / Retail', 'Gastronómico', 'Salud y Farmacia', 'Servicios y Belleza', 'Oficina / Coworking', 'Conveniencia'];
+const EDIFICIOS = ['Torre A', 'Torre B', 'Torre C', 'Plaza Central'];
+const NIVELES = ['Planta Baja', 'Piso 1', 'Piso 2', 'Nivel Terraza'];
+
+// Agrega el valor actual a las opciones para que el Select lo muestre aunque no esté en la lista.
+const withValue = (options: string[], value: string) =>
+    value && !options.includes(value) ? [value, ...options] : options;
 
 const getStatusBadge = (status: LocalData['status']) => {
     switch (status) {
@@ -184,9 +97,8 @@ const getStatusBadge = (status: LocalData['status']) => {
     }
 };
 
-export default function LocalesPage() {
-    const [localesList, setLocalesList] = useState<LocalData[]>(initialLocales);
-    const [selection, setSelection] = useState<string[]>([]);
+export default function LocalesPage({ locales }: { locales: LocalData[] }) {
+    const [selection, setSelection] = useState<number[]>([]);
 
     const [createModalOpened, { open: openCreateModal, close: closeCreateModal }] = useDisclosure(false);
     const [detailDrawerOpened, { open: openDetailDrawer, close: closeDetailDrawer }] = useDisclosure(false);
@@ -196,36 +108,22 @@ export default function LocalesPage() {
     const [building, setBuilding] = useState<string[]>([]);
     const [search, setSearch] = useState('');
 
-    const statusData = [
-        { value: 'Ocupado', label: 'Ocupado' },
-        { value: 'Disponible', label: 'Disponible' },
-        { value: 'Mantenimiento', label: 'Mantenimiento' },
-        { value: 'Reservado', label: 'Reservado' },
-    ];
+    const statusData = ESTADOS.map((estado) => ({ value: estado, label: estado }));
 
-    const buildingData = [
-        { value: 'Torre A', label: 'Torre A' },
-        { value: 'Torre B', label: 'Torre B' },
-        { value: 'Torre C', label: 'Torre C' },
-    ];
-    const [selectedLocal, setSelectedLocal] = useState<LocalData | null>(null);
+    const buildingData = useMemo(
+        () => [...new Set(locales.map((l) => l.building))].sort().map((b) => ({ value: b, label: b })),
+        [locales]
+    );
 
-    const [newLocal, setNewLocal] = useState<Partial<LocalData>>({
-        code: '',
-        name: '',
-        businessType: 'Comercial / Retail',
-        building: 'Torre A',
-        level: 'Planta Baja',
-        area: 60,
-        monthlyRent: 15000,
-        maintenanceFee: 2000,
-        status: 'Disponible',
-    });
+    // Se guarda el id (no el objeto) para que el drawer muestre los datos recargados del servidor.
+    const [selectedId, setSelectedId] = useState<number | null>(null);
+    const selectedLocal = locales.find((l) => l.id === selectedId) ?? null;
 
-    const [editFormData, setEditFormData] = useState<Partial<LocalData>>({});
+    const createForm = useForm<LocalForm>(emptyLocal);
+    const editForm = useForm<LocalForm>(emptyLocal);
 
     const filteredLocales = useMemo(() => {
-        return localesList.filter((local) => {
+        return locales.filter((local) => {
             const matchesSearch =
                 search === '' ||
                 local.code.toLowerCase().includes(search.toLowerCase()) ||
@@ -238,89 +136,84 @@ export default function LocalesPage() {
 
             return matchesSearch && matchesStatus && matchesBuilding;
         });
-    }, [localesList, search, status, building]);
+    }, [locales, search, status, building]);
 
-    const totalLocales = localesList.length;
-    const occupiedCount = localesList.filter((l) => l.status === 'Ocupado').length;
-    const availableCount = localesList.filter((l) => l.status === 'Disponible').length;
-    const maintenanceCount = localesList.filter((l) => l.status === 'Mantenimiento').length;
+    const totalLocales = locales.length;
+    const occupiedCount = locales.filter((l) => l.status === 'Ocupado').length;
+    const availableCount = locales.filter((l) => l.status === 'Disponible').length;
+    const maintenanceCount = locales.filter((l) => l.status === 'Mantenimiento').length;
     const occupiedPercentage = totalLocales > 0 ? Math.round((occupiedCount / totalLocales) * 100) : 0;
 
-    const toggleRow = (code: string) => {
+    const toggleRow = (id: number) => {
         setSelection((current) =>
-            current.includes(code) ? current.filter((item) => item !== code) : [...current, code]
+            current.includes(id) ? current.filter((item) => item !== id) : [...current, id]
         );
     };
 
     const toggleAll = () => {
         setSelection((current) =>
-            current.length === filteredLocales.length ? [] : filteredLocales.map((l) => l.code)
+            current.length === filteredLocales.length ? [] : filteredLocales.map((l) => l.id)
         );
     };
 
     const handleViewDetail = (local: LocalData) => {
-        setSelectedLocal(local);
+        setSelectedId(local.id);
         openDetailDrawer();
     };
 
     const handleOpenEdit = (local: LocalData) => {
-        setSelectedLocal(local);
-        setEditFormData({ ...local });
+        setSelectedId(local.id);
+        editForm.clearErrors();
+        editForm.setData(toForm(local));
         openEditModal();
     };
+
     const handleMarkAsAvailable = () => {
-    setLocalesList((prev) =>
-        prev.map((l) => (selection.includes(l.code) ? { ...l, status: "Disponible" } : l))
-    );
-    setSelection([]);
-    };
-    const handleSaveEdit = () => {
-        if (!selectedLocal) return;
-        setLocalesList((prev) =>
-            prev.map((item) => (item.id === selectedLocal.id ? ({ ...item, ...editFormData } as LocalData) : item))
+        router.patch(
+            LocalController.updateStatus(),
+            { ids: selection, status: 'Disponible' },
+            { preserveScroll: true, onSuccess: () => setSelection([]) }
         );
-        closeEditModal();
     };
 
-    const handleDeleteSingle = (id: string) => {
-        setLocalesList((prev) => prev.filter((item) => item.id !== id));
-        setSelection((prev) => prev.filter((code) => code !== selectedLocal?.code));
+    const handleSaveEdit = () => {
+        if (!selectedLocal) return;
+        editForm.submit(LocalController.update(selectedLocal.id), {
+            preserveScroll: true,
+            onSuccess: () => closeEditModal(),
+        });
+    };
+
+    const handleDeleteSingle = (local: LocalData) => {
+        if (!window.confirm(`¿Eliminar el local ${local.code}? Esta acción no se puede deshacer.`)) return;
+        router.delete(LocalController.destroy(local.id), {
+            preserveScroll: true,
+            onSuccess: () => setSelection((prev) => prev.filter((id) => id !== local.id)),
+        });
     };
 
     const handleDeleteSelected = () => {
-        setLocalesList((prev) => prev.filter((item) => !selection.includes(item.code)));
-        setSelection([]);
+        if (!window.confirm(`¿Eliminar ${selection.length} locales? Esta acción no se puede deshacer.`)) return;
+        router.delete(LocalController.destroyMany(), {
+            data: { ids: selection },
+            preserveScroll: true,
+            onSuccess: () => setSelection([]),
+        });
     };
 
     const handleCreateLocal = () => {
-        if (!newLocal.code || !newLocal.name) return;
-        const created: LocalData = {
-            id: String(Date.now()),
-            code: newLocal.code,
-            name: newLocal.name,
-            businessType: newLocal.businessType || 'Comercial',
-            building: newLocal.building || 'Torre A',
-            level: newLocal.level || 'Planta Baja',
-            area: Number(newLocal.area) || 50,
-            monthlyRent: Number(newLocal.monthlyRent) || 15000,
-            maintenanceFee: Number(newLocal.maintenanceFee) || 2000,
-            status: (newLocal.status as LocalData['status']) || 'Disponible',
-            tenantName: newLocal.tenantName || undefined,
-            tenantMail: newLocal.tenantMail || undefined,
-            tenantPhone: newLocal.tenantPhone || undefined,
-        };
-        setLocalesList((prev) => [created, ...prev]);
-        closeCreateModal();
-        setNewLocal({
-            code: '',
-            name: '',
-            businessType: 'Comercial / Retail',
-            building: 'Torre A',
-            level: 'Planta Baja',
-            area: 60,
-            monthlyRent: 15000,
-            maintenanceFee: 2000,
-            status: 'Disponible',
+        // Los datos del locatario solo se capturan cuando el local está ocupado.
+        createForm.transform((data) =>
+            data.status === 'Ocupado'
+                ? data
+                : { ...data, tenantName: '', tenantMail: '', tenantPhone: '', contractEnd: '' }
+        );
+        createForm.submit(LocalController.store(), {
+            preserveScroll: true,
+            onSuccess: () => {
+                closeCreateModal();
+                createForm.reset();
+            },
         });
     };
 
@@ -467,11 +360,11 @@ export default function LocalesPage() {
                                     </Table.Tr>
                                 ) : (
                                     filteredLocales.map((local) => (
-                                        <Table.Tr key={local.code}>
+                                        <Table.Tr key={local.id}>
                                             <Table.Td>
                                                 <Checkbox
-                                                    checked={selection.includes(local.code)}
-                                                    onChange={() => toggleRow(local.code)}
+                                                    checked={selection.includes(local.id)}
+                                                    onChange={() => toggleRow(local.id)}
                                                 />
                                             </Table.Td>
                                             <Table.Td>
@@ -545,7 +438,7 @@ export default function LocalesPage() {
                                                                 Editar local
                                                             </Menu.Item>
                                                             <Menu.Divider />
-                                                            <Menu.Item color="red" leftSection={<IconTrash size={14} />} onClick={() => handleDeleteSingle(local.id)}>
+                                                            <Menu.Item color="red" leftSection={<IconTrash size={14} />} onClick={() => handleDeleteSingle(local)}>
                                                                 Eliminar
                                                             </Menu.Item>
                                                         </Menu.Dropdown>
@@ -585,57 +478,53 @@ export default function LocalesPage() {
                 <Stack gap="md">
                     <Grid gap="md">
                         <Grid.Col span={{ base: 12, sm: 4 }}>
-                            <TextInput label="Código del local" placeholder="Ej: LC-11" required value={newLocal.code} onChange={(e) => setNewLocal({ ...newLocal, code: e.currentTarget.value })}/>
+                            <TextInput label="Código del local" placeholder="Ej: LC-11" required value={createForm.data.code} error={createForm.errors.code} onChange={(e) => createForm.setData('code', e.currentTarget.value)}/>
                         </Grid.Col>
                         <Grid.Col span={{ base: 12, sm: 8 }}>
-                            <TextInput label="Nombre / Razón Social" placeholder="Ej: Cafetería Central" required value={newLocal.name}
-                                onChange={(e) => setNewLocal({ ...newLocal, name: e.currentTarget.value })}
+                            <TextInput label="Nombre / Razón Social" placeholder="Ej: Cafetería Central" required value={createForm.data.name} error={createForm.errors.name}
+                                onChange={(e) => createForm.setData('name', e.currentTarget.value)}
                             />
                         </Grid.Col>
 
                         <Grid.Col span={{ base: 12, sm: 6 }}>
                             <Select label="Giro o categoría comercial"
-                                data={[
-                                    'Comercial / Retail',
-                                    'Gastronómico',
-                                    'Salud y Farmacia',
-                                    'Servicios y Belleza',
-                                    'Oficina / Coworking',
-                                    'Conveniencia',
-                                ]}
-                                value={newLocal.businessType}
-                                onChange={(val) => setNewLocal({ ...newLocal, businessType: val || 'Comercial' })}
+                                data={GIROS}
+                                value={createForm.data.businessType}
+                                error={createForm.errors.businessType}
+                                onChange={(val) => createForm.setData('businessType', val || 'Comercial')}
                             />
                         </Grid.Col>
                         <Grid.Col span={{ base: 12, sm: 6 }}>
-                            <Select label="Estado inicial" data={['Disponible', 'Ocupado', 'Mantenimiento', 'Reservado']}
-                                value={newLocal.status}
+                            <Select label="Estado inicial" data={ESTADOS}
+                                value={createForm.data.status}
+                                error={createForm.errors.status}
                                 onChange={(val) =>
-                                    setNewLocal({ ...newLocal, status: (val as LocalData['status']) || 'Disponible' })
+                                    createForm.setData('status', (val as LocalData['status']) || 'Disponible')
                                 }
                             />
                         </Grid.Col>
 
                         <Grid.Col span={{ base: 12, sm: 6 }}>
-                            <Select label="Edificio / Zona" data={['Torre A', 'Torre B', 'Torre C', 'Plaza Central']} value={newLocal.building}
-                                onChange={(val) => setNewLocal({ ...newLocal, building: val || 'Torre A' })}
+                            <Select label="Edificio / Zona" data={EDIFICIOS} value={createForm.data.building} error={createForm.errors.building}
+                                onChange={(val) => createForm.setData('building', val || 'Torre A')}
                             />
                         </Grid.Col>
                         <Grid.Col span={{ base: 12, sm: 6 }}>
-                            <Select label="Nivel / Piso" data={['Planta Baja', 'Piso 1', 'Piso 2', 'Nivel Terraza']} value={newLocal.level} onChange={(val) => setNewLocal({ ...newLocal, level: val || 'Planta Baja' })}
+                            <Select label="Nivel / Piso" data={NIVELES} value={createForm.data.level} error={createForm.errors.level} onChange={(val) => createForm.setData('level', val || 'Planta Baja')}
                             />
                         </Grid.Col>
 
                         <Grid.Col span={{ base: 12, sm: 4 }}>
-                            <NumberInput label="Superficie (m²)" min={10} max={1000} value={newLocal.area} onChange={(val) => setNewLocal({ ...newLocal, area: Number(val) })}/>
+                            <NumberInput label="Superficie (m²)" min={10} max={1000} value={createForm.data.area} error={createForm.errors.area} onChange={(val) => createForm.setData('area', val)}/>
                         </Grid.Col>
                         <Grid.Col span={{ base: 12, sm: 4 }}>
                             <NumberInput
                                 label="Renta Mensual ($)"
                                 min={1000}
                                 step={1000}
-                                value={newLocal.monthlyRent}
-                                onChange={(val) => setNewLocal({ ...newLocal, monthlyRent: Number(val) })}
+                                value={createForm.data.monthlyRent}
+                                error={createForm.errors.monthlyRent}
+                                onChange={(val) => createForm.setData('monthlyRent', val)}
                             />
                         </Grid.Col>
                         <Grid.Col span={{ base: 12, sm: 4 }}>
@@ -643,46 +532,63 @@ export default function LocalesPage() {
                                 label="Mantenimiento ($)"
                                 min={500}
                                 step={500}
-                                value={newLocal.maintenanceFee}
-                                onChange={(val) => setNewLocal({ ...newLocal, maintenanceFee: Number(val) })}
+                                value={createForm.data.maintenanceFee}
+                                error={createForm.errors.maintenanceFee}
+                                onChange={(val) => createForm.setData('maintenanceFee', val)}
                             />
                         </Grid.Col>
                     </Grid>
 
-                    {newLocal.status === 'Ocupado' && (
+                    {createForm.data.status === 'Ocupado' && (
                         <Card withBorder radius="sm" p="sm" bg="var(--mantine-color-gray-0)">
                             <Text size="xs" fw={700} tt="uppercase" c="dimmed" mb="xs">
                                 Información del Locatario
                             </Text>
                             <Grid gap="xs">
-                                <Grid.Col span={{ base: 12, sm: 4 }}>
+                                <Grid.Col span={{ base: 12, sm: 6 }}>
                                     <TextInput
                                         size="xs"
                                         label="Nombre del locatario"
                                         placeholder="Nombre completo"
-                                        value={newLocal.tenantName || ''}
-                                        onChange={(e) => setNewLocal({ ...newLocal, tenantName: e.currentTarget.value })}
+                                        value={createForm.data.tenantName}
+                                        error={createForm.errors.tenantName}
+                                        onChange={(e) => createForm.setData('tenantName', e.currentTarget.value)}
                                     />
                                 </Grid.Col>
-                                <Grid.Col span={{ base: 12, sm: 4 }}>
+                                <Grid.Col span={{ base: 12, sm: 6 }}>
                                     <TextInput
                                         size="xs"
                                         label="Correo electrónico"
                                         placeholder="correo@ejemplo.com"
-                                        value={newLocal.tenantMail || ''}
-                                        onChange={(e) => setNewLocal({ ...newLocal, tenantMail: e.currentTarget.value })}
+                                        value={createForm.data.tenantMail}
+                                        error={createForm.errors.tenantMail}
+                                        onChange={(e) => createForm.setData('tenantMail', e.currentTarget.value)}
                                     />
                                 </Grid.Col>
-                                <Grid.Col span={{ base: 12, sm: 4 }}>
+                                <Grid.Col span={{ base: 12, sm: 6 }}>
                                     <TextInput
                                         size="xs"
                                         label="Teléfono"
                                         placeholder="+52 ..."
-                                        value={newLocal.tenantPhone || ''}
-                                        onChange={(e) => setNewLocal({ ...newLocal, tenantPhone: e.currentTarget.value })}
+                                        value={createForm.data.tenantPhone}
+                                        error={createForm.errors.tenantPhone}
+                                        onChange={(e) => createForm.setData('tenantPhone', e.currentTarget.value)}
+                                    />
+                                </Grid.Col>
+                                <Grid.Col span={{ base: 12, sm: 6 }}>
+                                    <TextInput
+                                        size="xs"
+                                        type="date"
+                                        label="Fin de contrato"
+                                        value={createForm.data.contractEnd}
+                                        error={createForm.errors.contractEnd}
+                                        onChange={(e) => createForm.setData('contractEnd', e.currentTarget.value)}
                                     />
                                 </Grid.Col>
                             </Grid>
+                            <Text size="xs" c="dimmed" mt="xs">
+                                Si el correo no existe se crea la cuenta del locatario; podrá definir su contraseña con "¿Olvidaste tu contraseña?".
+                            </Text>
                         </Card>
                     )}
 
@@ -690,7 +596,7 @@ export default function LocalesPage() {
                         <Button variant="default" onClick={closeCreateModal}>
                             Cancelar
                         </Button>
-                        <Button color="blue" onClick={handleCreateLocal}>
+                        <Button color="blue" onClick={handleCreateLocal} loading={createForm.processing}>
                             Guardar Local
                         </Button>
                     </Group>
@@ -717,63 +623,82 @@ export default function LocalesPage() {
                         <Grid.Col span={{ base: 12, sm: 4 }}>
                             <TextInput
                                 label="Código del local"
-                                value={editFormData.code || ''}
-                                onChange={(e) => setEditFormData({ ...editFormData, code: e.currentTarget.value })}
+                                value={editForm.data.code}
+                                error={editForm.errors.code}
+                                onChange={(e) => editForm.setData('code', e.currentTarget.value)}
                             />
                         </Grid.Col>
                         <Grid.Col span={{ base: 12, sm: 8 }}>
                             <TextInput
                                 label="Nombre / Razón Social"
-                                value={editFormData.name || ''}
-                                onChange={(e) => setEditFormData({ ...editFormData, name: e.currentTarget.value })}
+                                value={editForm.data.name}
+                                error={editForm.errors.name}
+                                onChange={(e) => editForm.setData('name', e.currentTarget.value)}
                             />
                         </Grid.Col>
 
                         <Grid.Col span={{ base: 12, sm: 6 }}>
                             <Select
                                 label="Giro comercial"
-                                data={[
-                                    'Comercial / Retail',
-                                    'Gastronómico',
-                                    'Salud y Farmacia',
-                                    'Servicios y Belleza',
-                                    'Oficina / Coworking',
-                                    'Conveniencia',
-                                ]}
-                                value={editFormData.businessType || 'Comercial'}
-                                onChange={(val) => setEditFormData({ ...editFormData, businessType: val || '' })}
+                                data={withValue(GIROS, editForm.data.businessType)}
+                                value={editForm.data.businessType}
+                                error={editForm.errors.businessType}
+                                onChange={(val) => editForm.setData('businessType', val || '')}
                             />
                         </Grid.Col>
                         <Grid.Col span={{ base: 12, sm: 6 }}>
                             <Select
                                 label="Estado del local"
-                                data={['Disponible', 'Ocupado', 'Mantenimiento', 'Reservado']}
-                                value={editFormData.status || 'Disponible'}
+                                data={ESTADOS}
+                                value={editForm.data.status}
+                                error={editForm.errors.status}
                                 onChange={(val) =>
-                                    setEditFormData({ ...editFormData, status: val as LocalData['status'] })
+                                    editForm.setData('status', (val as LocalData['status']) || 'Disponible')
                                 }
+                            />
+                        </Grid.Col>
+
+                        <Grid.Col span={{ base: 12, sm: 6 }}>
+                            <Select
+                                label="Edificio / Zona"
+                                data={withValue(EDIFICIOS, editForm.data.building)}
+                                value={editForm.data.building}
+                                error={editForm.errors.building}
+                                onChange={(val) => editForm.setData('building', val || 'Torre A')}
+                            />
+                        </Grid.Col>
+                        <Grid.Col span={{ base: 12, sm: 6 }}>
+                            <Select
+                                label="Nivel / Piso"
+                                data={withValue(NIVELES, editForm.data.level)}
+                                value={editForm.data.level}
+                                error={editForm.errors.level}
+                                onChange={(val) => editForm.setData('level', val || 'Planta Baja')}
                             />
                         </Grid.Col>
 
                         <Grid.Col span={{ base: 12, sm: 4 }}>
                             <NumberInput
                                 label="Superficie (m²)"
-                                value={editFormData.area || 0}
-                                onChange={(val) => setEditFormData({ ...editFormData, area: Number(val) })}
+                                value={editForm.data.area}
+                                error={editForm.errors.area}
+                                onChange={(val) => editForm.setData('area', val)}
                             />
                         </Grid.Col>
                         <Grid.Col span={{ base: 12, sm: 4 }}>
                             <NumberInput
                                 label="Renta Mensual ($)"
-                                value={editFormData.monthlyRent || 0}
-                                onChange={(val) => setEditFormData({ ...editFormData, monthlyRent: Number(val) })}
+                                value={editForm.data.monthlyRent}
+                                error={editForm.errors.monthlyRent}
+                                onChange={(val) => editForm.setData('monthlyRent', val)}
                             />
                         </Grid.Col>
                         <Grid.Col span={{ base: 12, sm: 4 }}>
                             <NumberInput
                                 label="Mantenimiento ($)"
-                                value={editFormData.maintenanceFee || 0}
-                                onChange={(val) => setEditFormData({ ...editFormData, maintenanceFee: Number(val) })}
+                                value={editForm.data.maintenanceFee}
+                                error={editForm.errors.maintenanceFee}
+                                onChange={(val) => editForm.setData('maintenanceFee', val)}
                             />
                         </Grid.Col>
                     </Grid>
@@ -783,41 +708,57 @@ export default function LocalesPage() {
                             Datos del Locatario
                         </Text>
                         <Grid gap="xs">
-                            <Grid.Col span={{ base: 12, sm: 4 }}>
+                            <Grid.Col span={{ base: 12, sm: 6 }}>
                                 <TextInput
                                     size="xs"
                                     label="Nombre"
                                     placeholder="Sin locatario"
-                                    value={editFormData.tenantName || ''}
-                                    onChange={(e) => setEditFormData({ ...editFormData, tenantName: e.currentTarget.value })}
+                                    value={editForm.data.tenantName}
+                                    error={editForm.errors.tenantName}
+                                    onChange={(e) => editForm.setData('tenantName', e.currentTarget.value)}
                                 />
                             </Grid.Col>
-                            <Grid.Col span={{ base: 12, sm: 4 }}>
+                            <Grid.Col span={{ base: 12, sm: 6 }}>
                                 <TextInput
                                     size="xs"
                                     label="Email"
                                     placeholder="correo@ejemplo.com"
-                                    value={editFormData.tenantMail || ''}
-                                    onChange={(e) => setEditFormData({ ...editFormData, tenantMail: e.currentTarget.value })}
+                                    value={editForm.data.tenantMail}
+                                    error={editForm.errors.tenantMail}
+                                    onChange={(e) => editForm.setData('tenantMail', e.currentTarget.value)}
                                 />
                             </Grid.Col>
-                            <Grid.Col span={{ base: 12, sm: 4 }}>
+                            <Grid.Col span={{ base: 12, sm: 6 }}>
                                 <TextInput
                                     size="xs"
                                     label="Teléfono"
                                     placeholder="+52 ..."
-                                    value={editFormData.tenantPhone || ''}
-                                    onChange={(e) => setEditFormData({ ...editFormData, tenantPhone: e.currentTarget.value })}
+                                    value={editForm.data.tenantPhone}
+                                    error={editForm.errors.tenantPhone}
+                                    onChange={(e) => editForm.setData('tenantPhone', e.currentTarget.value)}
+                                />
+                            </Grid.Col>
+                            <Grid.Col span={{ base: 12, sm: 6 }}>
+                                <TextInput
+                                    size="xs"
+                                    type="date"
+                                    label="Fin de contrato"
+                                    value={editForm.data.contractEnd}
+                                    error={editForm.errors.contractEnd}
+                                    onChange={(e) => editForm.setData('contractEnd', e.currentTarget.value)}
                                 />
                             </Grid.Col>
                         </Grid>
+                        <Text size="xs" c="dimmed" mt="xs">
+                            Deja el nombre y el correo vacíos para quitar al locatario del local.
+                        </Text>
                     </Card>
 
                     <Group justify="flex-end" mt="md">
                         <Button variant="default" onClick={closeEditModal}>
                             Cancelar
                         </Button>
-                        <Button color="yellow" onClick={handleSaveEdit}>
+                        <Button color="yellow" onClick={handleSaveEdit} loading={editForm.processing}>
                             Actualizar Local
                         </Button>
                     </Group>
@@ -931,7 +872,7 @@ export default function LocalesPage() {
                                             <IconPhone size={18} color="var(--mantine-color-blue-6)" />
                                             <Box>
                                                 <Text size="xs" c="dimmed">Teléfono de contacto</Text>
-                                                <Text size="sm">{selectedLocal.tenantPhone}</Text>
+                                                <Text size="sm">{selectedLocal.tenantPhone ?? 'Sin teléfono'}</Text>
                                             </Box>
                                         </Flex>
                                         {selectedLocal.contractEnd && (

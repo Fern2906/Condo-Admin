@@ -2,8 +2,10 @@
 
 namespace Tests\Feature;
 
+use App\Models\Local;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Inertia\Testing\AssertableInertia as Assert;
 use Tests\TestCase;
 
 class DashboardTest extends TestCase
@@ -23,5 +25,23 @@ class DashboardTest extends TestCase
 
         $response = $this->get(route('dashboard'));
         $response->assertOk();
+    }
+
+    public function test_dashboard_shows_the_condo_stats()
+    {
+        $this->actingAs(User::factory()->create());
+
+        Local::factory()->ocupado()->count(3)->create();
+        Local::factory()->count(2)->create();
+
+        $this->get(route('dashboard'))
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('dashboard')
+                ->where('stats.localesTotal', 5)
+                ->where('stats.localesOcupados', 3)
+                ->where('stats.localesDisponibles', 2)
+                ->where('stats.incidenciasAbiertas', 0)
+                ->where('stats.reservacionesHoy', 0)
+            );
     }
 }
