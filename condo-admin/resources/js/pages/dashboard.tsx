@@ -5,6 +5,7 @@ import { StatCard } from '@/matine-components/stat-card';
 import { ActionButton } from '@/matine-components/action-button';
 import { index as localesIndex } from '@/routes/locales';
 import { index as usersIndex } from '@/routes/users';
+import { index as reservacionesIndex } from '@/routes/reservaciones';
 
 // Conteos que entrega App\Http\Controllers\DashboardController
 interface DashboardStats {
@@ -28,7 +29,7 @@ export default function Dashboard({ stats: data }: { stats: DashboardStats }) {
         { title: 'Locatarios', icon: IconUsers, color: 'violet', href: usersIndex.url() },
         { title: 'Cuotas y pagos', icon: IconReceiptTax, color: 'green' },
         { title: 'Incidencias', icon: IconReport, color: 'red', badge: badge(data.incidenciasAbiertas) },
-        { title: 'Reservaciones', icon: IconCalendarClock, color: 'orange' },
+        { title: 'Reservaciones', icon: IconCalendarClock, color: 'orange', badge: badge(data.reservacionesHoy), href: reservacionesIndex.url() },
         { title: 'Avisos', icon: IconBell, color: 'yellow', badge: badge(data.avisosVigentes) },
         { title: 'Reportes', icon: IconChartBar, color: 'teal' },
         { title: 'Mensajes', icon: IconMessage, color: 'pink', badge: badge(data.solicitudesPendientes) },

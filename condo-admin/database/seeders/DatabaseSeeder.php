@@ -17,5 +17,8 @@ class DatabaseSeeder extends Seeder
         // Crea al administrador test@example.com (contraseña: password),
         // los roles y los datos de demostración del condominio.
         $this->call(CondominioSeeder::class);
+
+        // Áreas comunes completas y reservaciones de ejemplo.
+        $this->call(ReservacionesSeeder::class);
     }
 }
