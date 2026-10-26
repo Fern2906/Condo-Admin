@@ -20,7 +20,7 @@ class UserController extends Controller
     {
         $users = User::with('locales')->orderBy('name')->get();
 
-        return Inertia::render('userList', [
+        return Inertia::render('features/users/index', [
             'users' => UserResource::collection($users)->resolve(),
         ]);
     }
