@@ -17,7 +17,7 @@ class IncidenciasController extends Controller
 {
     public function index()
     {
-        return Inertia::render('incidencias', [
+        return Inertia::render('features/incidencias/index', [
             'incidencias' => IncidenciaResource::collection(
                 Incidencia::with(['categoria', 'local', 'areaComun', 'usuario', 'admin'])
                     ->latest('fecha_reporte')
