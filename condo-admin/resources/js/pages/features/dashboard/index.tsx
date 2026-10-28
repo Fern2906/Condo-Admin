@@ -1,12 +1,24 @@
 import { Head } from '@inertiajs/react';
-import {Box,Card,Grid,SimpleGrid,Stack,Text,Title,} from '@mantine/core';
-import {IconBell,IconBuildingStore,IconCalendarClock,IconChartBar,IconFileReport,IconHome,IconMessage,IconReceiptTax,IconReport,IconUsers,} from '@tabler/icons-react';
-import { StatCard } from '@/matine-components/stat-card';
-import { ActionButton } from '@/matine-components/action-button';
+import { Badge, Box, Card, Group, SimpleGrid, Stack, Text, ThemeIcon, Title } from '@mantine/core';
+import {
+    IconArrowRight,
+    IconBell,
+    IconBuildingStore,
+    IconCalendarClock,
+    IconChartBar,
+    IconFileReport,
+    IconHome,
+    IconMessage,
+    IconReceiptTax,
+    IconReport,
+    IconUsers,
+} from '@tabler/icons-react';
+import { TittlePage } from '@/matine-components/tittle-page';
 import { index as localesIndex } from '@/routes/locales';
 import { index as usersIndex } from '@/routes/users';
 import { index as reservacionesIndex } from '@/routes/reservaciones';
-import { index as incidenciasIndex } from '@/routes/incidencias'
+import { index as incidenciasIndex } from '@/routes/incidencias';
+
 interface DashboardStats {
     localesTotal: number;
     localesOcupados: number;
@@ -19,80 +31,134 @@ interface DashboardStats {
     solicitudesPendientes: number;
 }
 
-const percentage = (part: number, total: number) => (total > 0 ? Math.round((part / total) * 100) : 0);
-const badge = (count: number) => (count > 0 ? String(count) : undefined);
-
 export default function Dashboard({ stats: data }: { stats: DashboardStats }) {
-    const adminActions = [
-        { title: 'Locales', icon: IconBuildingStore, color: 'blue', href: localesIndex.url() },
-        { title: 'Locatarios', icon: IconUsers, color: 'violet', href: usersIndex.url() },
-        { title: 'Cuotas y pagos', icon: IconReceiptTax, color: 'green' },
-        { title: 'Incidencias', icon: IconReport, color: 'red', badge: badge(data.incidenciasAbiertas), href: incidenciasIndex.url() },
-        { title: 'Reservaciones', icon: IconCalendarClock, color: 'orange', badge: badge(data.reservacionesHoy), href: reservacionesIndex.url() },
-        { title: 'Avisos', icon: IconBell, color: 'yellow', badge: badge(data.avisosVigentes) },
-        { title: 'Reportes', icon: IconChartBar, color: 'teal' },
-        { title: 'Mensajes', icon: IconMessage, color: 'pink', badge: badge(data.solicitudesPendientes) },
-        { title: 'Contratos', icon: IconFileReport, color: 'cyan' },
-    ];
-
-    const stats = [
+    const kpis = [
         {
-            label: 'Locales ocupados',
-            value: `${data.localesOcupados} / ${data.localesTotal}`,
+            title: 'Locales Ocupados',
+            value: data.localesOcupados,
+            total: data.localesTotal,
             icon: IconHome,
             color: 'blue',
-            progress: percentage(data.localesOcupados, data.localesTotal),
-            description: `${data.localesDisponibles} locales disponibles`,
+            description: `${data.localesDisponibles} disponibles`,
         },
         {
-            label: 'Incidencias abiertas',
-            value: String(data.incidenciasAbiertas),
+            title: 'Incidencias Abiertas',
+            value: data.incidenciasAbiertas,
             icon: IconReport,
             color: 'red',
-            progress: percentage(data.incidenciasSinAtender, data.incidenciasAbiertas),
-            description: `${data.incidenciasSinAtender} pendientes de atender`,
+            description: `${data.incidenciasSinAtender} sin atender`,
         },
         {
-            label: 'Reservaciones hoy',
-            value: String(data.reservacionesHoy),
+            title: 'Reservaciones Hoy',
+            value: data.reservacionesHoy,
             icon: IconCalendarClock,
             color: 'orange',
-            progress: percentage(data.reservacionesHoyAprobadas, data.reservacionesHoy),
-            description: `${data.reservacionesHoyAprobadas} aprobadas · áreas comunes`,
+            description: `${data.reservacionesHoyAprobadas} aprobadas`,
         },
+    ];
+
+    const quickActions = [
+        { title: 'Locales', description: 'Gestionar espacios comerciales', icon: IconBuildingStore, color: 'blue', href: localesIndex.url() },
+        { title: 'Locatarios', description: 'Administrar inquilinos', icon: IconUsers, color: 'violet', href: usersIndex.url() },
+        { title: 'Cuotas y pagos', description: 'Control financiero', icon: IconReceiptTax, color: 'green' },
+        { title: 'Incidencias', description: 'Seguimiento y atención', icon: IconReport, color: 'red', href: incidenciasIndex.url(), badge: data.incidenciasAbiertas },
+        { title: 'Reservaciones', description: 'Áreas comunes', icon: IconCalendarClock, color: 'orange', href: reservacionesIndex.url(), badge: data.reservacionesHoy },
+        { title: 'Avisos', description: 'Comunicación general', icon: IconBell, color: 'yellow', badge: data.avisosVigentes },
+        { title: 'Reportes', description: 'Estadísticas y análisis', icon: IconChartBar, color: 'teal' },
+        { title: 'Mensajes', description: 'Buzón de solicitudes', icon: IconMessage, color: 'pink', badge: data.solicitudesPendientes },
+        { title: 'Contratos', description: 'Documentación legal', icon: IconFileReport, color: 'cyan' },
     ];
 
     return (
         <>
             <Head title="Dashboard" />
 
-            <Stack gap="xl" p="md">
-                <Box>
-                    <Title order={2} fw={600}>
-                        Panel de administración
-                    </Title>
-                    <Text c="dimmed" size="sm" mt={4}>
-                        Resumen general del condominio
-                    </Text>
-                </Box>
+            <Stack gap="xl" p={{ base: 'sm', md: 'md' }} w="100%" h="100%">
+                <TittlePage
+                    title="Panel de Administración"
+                    message="Resumen general del condominio"
+                    icon={<IconChartBar size={40} color="var(--mantine-color-blue-8)" />}
+                />
 
-                <Grid justify="space-between" align='center' gap={"lg"}>
-                    {stats.map((stat) => (
-                        <Grid.Col key={stat.label} span={"auto"}>
-                            <div style={{ width: '100%' }}>
-                                <StatCard stat={stat} />
-                            </div>
-                        </Grid.Col>
+                <SimpleGrid cols={{ base: 1, sm: 2, lg: 3 }} spacing="md">
+                    {kpis.map((kpi) => (
+                        <Card key={kpi.title} withBorder radius="lg" padding="lg" shadow="sm">
+                            <Group justify="space-between" align="flex-start" wrap="nowrap">
+                                <Stack gap="xs">
+                                    <Text size="xs" c="dimmed" tt="uppercase" fw={700}>
+                                        {kpi.title}
+                                    </Text>
+                                    <Group align="baseline" gap="xs">
+                                        <Title order={2} fw={700}>
+                                            {kpi.value}
+                                        </Title>
+                                        {kpi.total !== undefined && (
+                                            <Text size="sm" c="dimmed">
+                                                / {kpi.total}
+                                            </Text>
+                                        )}
+                                    </Group>
+                                    <Text size="xs" c="dimmed">
+                                        {kpi.description}
+                                    </Text>
+                                </Stack>
+                                <ThemeIcon size={56} radius="xl" variant="light" color={kpi.color}>
+                                    <kpi.icon size={28} stroke={1.5} />
+                                </ThemeIcon>
+                            </Group>
+                        </Card>
                     ))}
-                </Grid>
+                </SimpleGrid>
 
-                <Card withBorder radius="md" padding="lg">
-                    <Text fw={600} size="sm" mb="md">
-                        Acciones rápidas
-                    </Text>
-                    <SimpleGrid cols={{ base: 2, sm: 2, md: 4, lg: 6 }}>
-                        {adminActions.map((item) => (
-                            <ActionButton key={item.title} item={item} />
+                <Card withBorder radius="lg" padding={{ base: 'md', md: 'lg' }} shadow="sm">
+                    <Group justify="space-between" mb="lg" wrap="wrap">
+                        <Stack gap={4}>
+                            <Title order={3} fw={600}>
+                                Acciones Rápidas
+                            </Title>
+                            <Text size="sm" c="dimmed">
+                                Accede rápidamente a las funciones principales
+                            </Text>
+                        </Stack>
+                    </Group>
+                    <SimpleGrid cols={{ base: 1, xs: 2, sm: 3, md: 4, lg: 5 }} spacing="md">
+                        {quickActions.map((action) => (
+                            <Card
+                                key={action.title}
+                                component={action.href ? 'a' : 'div'}
+                                href={action.href}
+                                withBorder
+                                radius="md"
+                                padding="md"
+                                className={action.href ? 'group cursor-pointer transition-all duration-200 hover:-translate-y-1 hover:shadow-md hover:border-blue-400/60' : 'opacity-60'}
+                                style={{
+                                    textDecoration: 'none',
+                                }}
+                            >
+                                <Stack gap="sm">
+                                    <Group justify="space-between" align="flex-start">
+                                        <ThemeIcon size={44} radius="md" variant="light" color={action.color}>
+                                            <action.icon size={24} stroke={1.5} />
+                                        </ThemeIcon>
+                                        {action.badge !== undefined && action.badge > 0 && (
+                                            <Badge color="red" variant="filled" size="sm">
+                                                {action.badge}
+                                            </Badge>
+                                        )}
+                                    </Group>
+                                    <Stack gap={2}>
+                                        <Group justify="space-between" align="center">
+                                            <Text fw={600} size="sm">
+                                                {action.title}
+                                            </Text>
+                                            {action.href && <IconArrowRight size={16} className="opacity-0 transition-opacity duration-200 group-hover:opacity-100" color="var(--mantine-color-dimmed)" />}
+                                        </Group>
+                                        <Text size="xs" c="dimmed" lineClamp={2}>
+                                            {action.description}
+                                        </Text>
+                                    </Stack>
+                                </Stack>
+                            </Card>
                         ))}
                     </SimpleGrid>
                 </Card>
@@ -100,4 +166,3 @@ export default function Dashboard({ stats: data }: { stats: DashboardStats }) {
         </>
     );
 }
-
