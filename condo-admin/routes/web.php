@@ -6,6 +6,7 @@ use App\Http\Controllers\ContratoController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\LocalController;
 use App\Http\Controllers\PagosController;
+use App\Http\Controllers\ReportesController;
 use App\Http\Controllers\ReservacionController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\IncidenciasController;
@@ -67,6 +68,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::patch('pagos/estado', [PagosController::class, 'updateStatus'])->name('pagos.update-status');
     Route::resource('pagos', PagosController::class)
         ->only(['index', 'store', 'update', 'destroy']);
+
+    // Reportes y Estadísticas
+    Route::get('reportes', [ReportesController::class, 'index'])->name('reportes.index');
 
 });
 

@@ -83,7 +83,7 @@ export default function Dashboard({ stats: data }: { stats: DashboardStats }) {
         { title: 'Incidencias', description: 'Seguimiento y atención', icon: IconReport, color: 'red', href: incidenciasIndex.url(), badge: data.incidenciasAbiertas },
         { title: 'Reservaciones', description: 'Áreas comunes', icon: IconCalendarClock, color: 'orange', href: reservacionesIndex.url(), badge: data.reservacionesHoy },
         { title: 'Avisos', description: 'Comunicación general', icon: IconBell, color: 'yellow', href: avisosIndex.url(), badge: data.avisosVigentes },
-        { title: 'Reportes', description: 'Estadísticas y análisis', icon: IconChartBar, color: 'teal' },
+        { title: 'Reportes', description: 'Estadísticas y análisis', icon: IconChartBar, color: 'teal', href: '/reportes' },
         { title: 'Mensajes', description: 'Buzón de solicitudes', icon: IconMessage, color: 'pink', badge: data.solicitudesPendientes },
         {
             title: 'Contratos',

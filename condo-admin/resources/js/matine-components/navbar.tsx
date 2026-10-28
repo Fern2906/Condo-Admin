@@ -42,7 +42,7 @@ export default function Navbar({ links }: Readonly<NavbarProps>) {
     ));
 
     return (
-        <header className={classes.header}>
+        <header className={classes.header} style={{ zIndex: 1000001 }}>
             <Container size="md" className={classes.inner}>
                 <Link href="/" aria-label="Inicio">
                     <span>CONDO ADMIN</span>
