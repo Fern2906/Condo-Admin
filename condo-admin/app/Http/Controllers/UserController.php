@@ -14,7 +14,7 @@ use Inertia\Response;
 class UserController extends Controller
 {
     /**
-     * Show the list of residents and tenants.
+     * Mostrar la lista de residentes y locatarios.
      */
     public function index(): Response
     {
@@ -26,7 +26,7 @@ class UserController extends Controller
     }
 
     /**
-     * Register a new user from the administration panel.
+     * Registrar un usuario nuevo desde el panel de administración.
      */
     public function store(UserRequest $request): RedirectResponse
     {
@@ -42,7 +42,7 @@ class UserController extends Controller
     }
 
     /**
-     * Update a user's contact data and status.
+     * Actualizar los datos de contacto y el estado de un usuario.
      */
     public function update(UserRequest $request, User $user): RedirectResponse
     {
@@ -67,7 +67,7 @@ class UserController extends Controller
     }
 
     /**
-     * Delete a user without related records.
+     * Eliminar un usuario sin registros asociados.
      */
     public function destroy(Request $request, User $user): RedirectResponse
     {
@@ -95,7 +95,7 @@ class UserController extends Controller
     }
 
     /**
-     * Delete the selected users, skipping the current user and those with related records.
+     * Eliminar los usuarios seleccionados, omitiendo al usuario en sesión y a los que tienen registros asociados.
      */
     public function destroyMany(Request $request): RedirectResponse
     {
@@ -120,7 +120,7 @@ class UserController extends Controller
     }
 
     /**
-     * Block or unblock the selected users (never the current user).
+     * Bloquear o desbloquear a los usuarios seleccionados (nunca al usuario en sesión).
      */
     public function updateStatus(Request $request): RedirectResponse
     {
@@ -144,7 +144,7 @@ class UserController extends Controller
     }
 
     /**
-     * Delete the user unless payments, incidents, etc. still reference it.
+     * Eliminar al usuario, a menos que todavía lo referencien pagos, incidencias, etc.
      */
     private function deleteUser(User $user): bool
     {

@@ -14,7 +14,7 @@ use Laravel\Fortify\Features;
 class SecurityController extends Controller
 {
     /**
-     * Show the user's security settings page.
+     * Mostrar la página de configuración de seguridad del usuario.
      */
     public function edit(TwoFactorAuthenticationRequest $request): Response
     {
@@ -51,7 +51,7 @@ class SecurityController extends Controller
     }
 
     /**
-     * Update the user's password.
+     * Actualizar la contraseña del usuario.
      */
     public function update(PasswordUpdateRequest $request): RedirectResponse
     {
