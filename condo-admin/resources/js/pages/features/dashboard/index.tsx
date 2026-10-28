@@ -35,6 +35,7 @@ interface DashboardStats {
     contratosTotal?: number;
     contratosPorVencer?: number;
     contratosVencidos?: number;
+    pagosPendientes?: number;
 }
 
 export default function Dashboard({ stats: data }: { stats: DashboardStats }) {
@@ -78,7 +79,7 @@ export default function Dashboard({ stats: data }: { stats: DashboardStats }) {
     const quickActions = [
         { title: 'Locales', description: 'Gestionar espacios comerciales', icon: IconBuildingStore, color: 'blue', href: localesIndex.url() },
         { title: 'Locatarios', description: 'Administrar inquilinos', icon: IconUsers, color: 'violet', href: usersIndex.url() },
-        { title: 'Cuotas y pagos', description: 'Control financiero', icon: IconReceiptTax, color: 'green' },
+        { title: 'Cuotas y pagos', description: 'Control financiero y cobranza', icon: IconReceiptTax, color: 'green', href: '/pagos', badge: data.pagosPendientes },
         { title: 'Incidencias', description: 'Seguimiento y atención', icon: IconReport, color: 'red', href: incidenciasIndex.url(), badge: data.incidenciasAbiertas },
         { title: 'Reservaciones', description: 'Áreas comunes', icon: IconCalendarClock, color: 'orange', href: reservacionesIndex.url(), badge: data.reservacionesHoy },
         { title: 'Avisos', description: 'Comunicación general', icon: IconBell, color: 'yellow', href: avisosIndex.url(), badge: data.avisosVigentes },

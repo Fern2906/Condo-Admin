@@ -20,5 +20,8 @@ class DatabaseSeeder extends Seeder
 
         // Áreas comunes completas y reservaciones de ejemplo.
         $this->call(ReservacionesSeeder::class);
+
+        // Cuotas, cargos y pagos de ejemplo con los locales y usuarios existentes.
+        $this->call(PagosSeeder::class);
     }
 }

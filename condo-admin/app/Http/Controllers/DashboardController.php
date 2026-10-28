@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Aviso;
 use App\Models\Incidencia;
 use App\Models\Local;
+use App\Models\Pago;
 use App\Models\Reservacion;
 use App\Models\ResidenteLocal;
 use App\Models\Solicitud;
@@ -46,6 +47,7 @@ class DashboardController extends Controller
                 'contratosTotal' => ResidenteLocal::count(),
                 'contratosPorVencer' => $contratosPorVencer,
                 'contratosVencidos' => $contratosVencidos,
+                'pagosPendientes' => Pago::where('estado', 'pendiente')->count(),
             ],
         ]);
     }

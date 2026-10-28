@@ -5,6 +5,7 @@ use App\Http\Controllers\AvisoController;
 use App\Http\Controllers\ContratoController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\LocalController;
+use App\Http\Controllers\PagosController;
 use App\Http\Controllers\ReservacionController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\IncidenciasController;
@@ -59,6 +60,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Contratos (registros de residente_local)
     Route::delete('contratos', [ContratoController::class, 'destroyMany'])->name('contratos.destroy-many');
     Route::resource('contratos', ContratoController::class)
+        ->only(['index', 'store', 'update', 'destroy']);
+
+    // Cuotas y Pagos
+    Route::delete('pagos', [PagosController::class, 'destroyMany'])->name('pagos.destroy-many');
+    Route::patch('pagos/estado', [PagosController::class, 'updateStatus'])->name('pagos.update-status');
+    Route::resource('pagos', PagosController::class)
         ->only(['index', 'store', 'update', 'destroy']);
 
 });
