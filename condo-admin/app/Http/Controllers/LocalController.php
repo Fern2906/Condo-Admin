@@ -17,7 +17,7 @@ use Inertia\Response;
 class LocalController extends Controller
 {
     /**
-     * Show the list of commercial units.
+     * Mostrar la lista de locales comerciales.
      */
     public function index(): Response
     {
@@ -29,7 +29,7 @@ class LocalController extends Controller
     }
 
     /**
-     * Register a new commercial unit and, optionally, its tenant.
+     * Registrar un local comercial nuevo y, opcionalmente, su locatario.
      */
     public function store(LocalRequest $request): RedirectResponse
     {
@@ -45,7 +45,7 @@ class LocalController extends Controller
     }
 
     /**
-     * Update a commercial unit and its tenant.
+     * Actualizar un local comercial y su locatario.
      */
     public function update(LocalRequest $request, Local $local): RedirectResponse
     {
@@ -61,7 +61,7 @@ class LocalController extends Controller
     }
 
     /**
-     * Delete a commercial unit without financial history.
+     * Eliminar un local comercial sin historial financiero.
      */
     public function destroy(Local $local): RedirectResponse
     {
@@ -82,7 +82,7 @@ class LocalController extends Controller
     }
 
     /**
-     * Delete the selected commercial units, skipping those with financial history.
+     * Eliminar los locales seleccionados, omitiendo los que tienen historial financiero.
      */
     public function destroyMany(Request $request): RedirectResponse
     {
@@ -108,7 +108,7 @@ class LocalController extends Controller
     }
 
     /**
-     * Change the status of the selected commercial units.
+     * Cambiar el estado de los locales seleccionados.
      */
     public function updateStatus(Request $request): RedirectResponse
     {
@@ -126,8 +126,8 @@ class LocalController extends Controller
     }
 
     /**
-     * Find the tenant by email (or create it) and update its contact data.
-     * Returns null when the form has no tenant, which unassigns the unit.
+     * Buscar al locatario por correo (o crearlo) y actualizar sus datos de contacto.
+     * Devuelve null cuando el formulario no trae locatario, lo que desasigna el local.
      */
     private function resolveTenant(LocalRequest $request): ?User
     {

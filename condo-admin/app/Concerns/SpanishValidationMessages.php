@@ -21,9 +21,12 @@ trait SpanishValidationMessages
             'email' => 'El campo :attribute debe ser un correo válido.',
             'unique' => 'Ya existe un registro con ese :attribute.',
             'numeric' => 'El campo :attribute debe ser un número.',
+            'integer' => 'El campo :attribute debe ser un número entero.',
             'boolean' => 'El campo :attribute debe ser verdadero o falso.',
             'date' => 'El campo :attribute no es una fecha válida.',
+            'after' => 'El campo :attribute debe ser una fecha posterior a :date.',
             'in' => 'El valor seleccionado en :attribute no es válido.',
+            'exists' => 'El valor seleccionado en :attribute no existe.',
             'min' => [
                 'numeric' => 'El campo :attribute debe ser al menos :min.',
                 'string' => 'El campo :attribute debe tener al menos :min caracteres.',

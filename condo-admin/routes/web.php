@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\AreaComunController;
+use App\Http\Controllers\AvisoController;
+use App\Http\Controllers\ContratoController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\LocalController;
 use App\Http\Controllers\ReservacionController;
@@ -47,6 +49,17 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('categorias-incidencia', CategoriaIncidenciaController::class)
         ->only(['index', 'store', 'update', 'destroy'])
     ->parameters(['categorias-incidencia' => 'categoria']);
+
+    // Avisos
+    Route::delete('avisos', [AvisoController::class, 'destroyMany'])->name('avisos.destroy-many');
+    Route::patch('avisos/estado', [AvisoController::class, 'updateStatus'])->name('avisos.update-status');
+    Route::resource('avisos', AvisoController::class)
+        ->only(['index', 'store', 'update', 'destroy']);
+
+    // Contratos (registros de residente_local)
+    Route::delete('contratos', [ContratoController::class, 'destroyMany'])->name('contratos.destroy-many');
+    Route::resource('contratos', ContratoController::class)
+        ->only(['index', 'store', 'update', 'destroy']);
 
 });
 

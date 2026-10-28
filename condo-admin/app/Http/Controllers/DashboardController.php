@@ -13,7 +13,7 @@ use Inertia\Response;
 class DashboardController extends Controller
 {
     /**
-     * Show the administration dashboard with the condo's summary.
+     * Mostrar el panel de administración con el resumen del condominio.
      */
     public function __invoke(): Response
     {
