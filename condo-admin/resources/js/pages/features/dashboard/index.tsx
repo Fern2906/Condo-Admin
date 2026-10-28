@@ -18,6 +18,7 @@ import { index as localesIndex } from '@/routes/locales';
 import { index as usersIndex } from '@/routes/users';
 import { index as reservacionesIndex } from '@/routes/reservaciones';
 import { index as incidenciasIndex } from '@/routes/incidencias';
+import { index as avisosIndex } from '@/routes/avisos';
 
 interface DashboardStats {
     localesTotal: number;
@@ -63,7 +64,7 @@ export default function Dashboard({ stats: data }: { stats: DashboardStats }) {
         { title: 'Cuotas y pagos', description: 'Control financiero', icon: IconReceiptTax, color: 'green' },
         { title: 'Incidencias', description: 'Seguimiento y atención', icon: IconReport, color: 'red', href: incidenciasIndex.url(), badge: data.incidenciasAbiertas },
         { title: 'Reservaciones', description: 'Áreas comunes', icon: IconCalendarClock, color: 'orange', href: reservacionesIndex.url(), badge: data.reservacionesHoy },
-        { title: 'Avisos', description: 'Comunicación general', icon: IconBell, color: 'yellow', badge: data.avisosVigentes },
+        { title: 'Avisos', description: 'Comunicación general', icon: IconBell, color: 'yellow', href: avisosIndex.url(), badge: data.avisosVigentes },
         { title: 'Reportes', description: 'Estadísticas y análisis', icon: IconChartBar, color: 'teal' },
         { title: 'Mensajes', description: 'Buzón de solicitudes', icon: IconMessage, color: 'pink', badge: data.solicitudesPendientes },
         { title: 'Contratos', description: 'Documentación legal', icon: IconFileReport, color: 'cyan' },
