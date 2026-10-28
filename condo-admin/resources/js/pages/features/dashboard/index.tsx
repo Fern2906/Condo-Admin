@@ -1,4 +1,4 @@
-import { Head } from '@inertiajs/react';
+import { Head, Link } from '@inertiajs/react';
 import { Badge, Box, Card, Group, SimpleGrid, Stack, Text, ThemeIcon, Title } from '@mantine/core';
 import {
     IconArrowRight,
@@ -6,6 +6,7 @@ import {
     IconBuildingStore,
     IconCalendarClock,
     IconChartBar,
+    IconFileCertificate,
     IconFileReport,
     IconHome,
     IconMessage,
@@ -19,6 +20,7 @@ import { index as usersIndex } from '@/routes/users';
 import { index as reservacionesIndex } from '@/routes/reservaciones';
 import { index as incidenciasIndex } from '@/routes/incidencias';
 import { index as avisosIndex } from '@/routes/avisos';
+import { index as contratosIndex } from '@/routes/contratos';
 
 interface DashboardStats {
     localesTotal: number;
@@ -30,6 +32,9 @@ interface DashboardStats {
     reservacionesHoyAprobadas: number;
     avisosVigentes: number;
     solicitudesPendientes: number;
+    contratosTotal?: number;
+    contratosPorVencer?: number;
+    contratosVencidos?: number;
 }
 
 export default function Dashboard({ stats: data }: { stats: DashboardStats }) {
@@ -56,6 +61,18 @@ export default function Dashboard({ stats: data }: { stats: DashboardStats }) {
             color: 'orange',
             description: `${data.reservacionesHoyAprobadas} aprobadas`,
         },
+        {
+            title: 'Contratos Activos',
+            value: data.contratosTotal ?? 0,
+            icon: IconFileCertificate,
+            color: 'cyan',
+            description:
+                (data.contratosPorVencer ?? 0) > 0
+                    ? `${data.contratosPorVencer} por vencer (30 días)`
+                    : (data.contratosVencidos ?? 0) > 0
+                    ? `${data.contratosVencidos} vencidos`
+                    : 'Control y vigencias',
+        },
     ];
 
     const quickActions = [
@@ -67,7 +84,14 @@ export default function Dashboard({ stats: data }: { stats: DashboardStats }) {
         { title: 'Avisos', description: 'Comunicación general', icon: IconBell, color: 'yellow', href: avisosIndex.url(), badge: data.avisosVigentes },
         { title: 'Reportes', description: 'Estadísticas y análisis', icon: IconChartBar, color: 'teal' },
         { title: 'Mensajes', description: 'Buzón de solicitudes', icon: IconMessage, color: 'pink', badge: data.solicitudesPendientes },
-        { title: 'Contratos', description: 'Documentación legal', icon: IconFileReport, color: 'cyan' },
+        {
+            title: 'Contratos',
+            description: 'Vigencias y asignaciones',
+            icon: IconFileCertificate,
+            color: 'cyan',
+            href: contratosIndex.url(),
+            badge: (data.contratosPorVencer ?? 0) + (data.contratosVencidos ?? 0),
+        },
     ];
 
     return (
@@ -81,7 +105,7 @@ export default function Dashboard({ stats: data }: { stats: DashboardStats }) {
                     icon={<IconChartBar size={40} color="var(--mantine-color-blue-8)" />}
                 />
 
-                <SimpleGrid cols={{ base: 1, sm: 2, lg: 3 }} spacing="md">
+                <SimpleGrid cols={{ base: 1, sm: 2, lg: 4 }} spacing="md">
                     {kpis.map((kpi) => (
                         <Card key={kpi.title} withBorder radius="lg" padding="lg" shadow="sm">
                             <Group justify="space-between" align="flex-start" wrap="nowrap">
@@ -126,7 +150,7 @@ export default function Dashboard({ stats: data }: { stats: DashboardStats }) {
                         {quickActions.map((action) => (
                             <Card
                                 key={action.title}
-                                component={action.href ? 'a' : 'div'}
+                                component={action.href ? Link : 'div'}
                                 href={action.href}
                                 withBorder
                                 radius="md"

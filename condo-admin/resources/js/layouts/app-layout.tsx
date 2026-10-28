@@ -6,6 +6,7 @@ export default function AppLayout({ children }: Readonly<{ children: React.React
         { link: '/dashboard', label: 'Dashboard' },
         { link: '/locales', label: 'Locales' },
         { link: '/users', label: 'Locatarios' },
+        { link: '/contratos', label: 'Contratos' },
     ];
 
     return (
