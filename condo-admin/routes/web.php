@@ -5,6 +5,7 @@ use App\Http\Controllers\AvisoController;
 use App\Http\Controllers\ContratoController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\LocalController;
+use App\Http\Controllers\MensajeController;
 use App\Http\Controllers\PagosController;
 use App\Http\Controllers\ReportesController;
 use App\Http\Controllers\ReservacionController;
@@ -71,6 +72,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Reportes y Estadísticas
     Route::get('reportes', [ReportesController::class, 'index'])->name('reportes.index');
+
+    // Mensajes y Chat en Vivo (WebSockets)
+    Route::get('mensajes', [MensajeController::class, 'index'])->name('mensajes.index');
+    Route::post('mensajes', [MensajeController::class, 'store'])->name('mensajes.store');
+    Route::post('mensajes/leido', [MensajeController::class, 'markAsRead'])->name('mensajes.read');
+    Route::delete('mensajes/{mensaje}', [MensajeController::class, 'destroy'])->name('mensajes.destroy');
 
 });
 

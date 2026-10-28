@@ -9,6 +9,7 @@ export default function AppLayout({ children }: Readonly<{ children: React.React
         { link: '/contratos', label: 'Contratos' },
         { link: '/pagos', label: 'Cuotas y Pagos' },
         { link: '/reportes', label: 'Reportes' },
+        { link: '/mensajes', label: 'Mensajes' },
     ];
 
     return (

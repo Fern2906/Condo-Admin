@@ -23,5 +23,8 @@ class DatabaseSeeder extends Seeder
 
         // Cuotas, cargos y pagos de ejemplo con los locales y usuarios existentes.
         $this->call(PagosSeeder::class);
+
+        // Mensajes de chat en vivo de ejemplo.
+        $this->call(MensajesSeeder::class);
     }
 }

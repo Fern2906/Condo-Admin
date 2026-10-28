@@ -84,15 +84,8 @@ export default function Dashboard({ stats: data }: { stats: DashboardStats }) {
         { title: 'Reservaciones', description: 'Áreas comunes', icon: IconCalendarClock, color: 'orange', href: reservacionesIndex.url(), badge: data.reservacionesHoy },
         { title: 'Avisos', description: 'Comunicación general', icon: IconBell, color: 'yellow', href: avisosIndex.url(), badge: data.avisosVigentes },
         { title: 'Reportes', description: 'Estadísticas y análisis', icon: IconChartBar, color: 'teal', href: '/reportes' },
-        { title: 'Mensajes', description: 'Buzón de solicitudes', icon: IconMessage, color: 'pink', badge: data.solicitudesPendientes },
-        {
-            title: 'Contratos',
-            description: 'Vigencias y asignaciones',
-            icon: IconFileCertificate,
-            color: 'cyan',
-            href: contratosIndex.url(),
-            badge: (data.contratosPorVencer ?? 0) + (data.contratosVencidos ?? 0),
-        },
+        { title: 'Mensajes', description: 'Chat en vivo y solicitudes', icon: IconMessage, color: 'pink', href: '/mensajes', badge: data.solicitudesPendientes },
+        { title: 'Contratos', description: 'Vigencias y asignaciones', icon: IconFileCertificate, color: 'cyan', href: contratosIndex.url(), badge: (data.contratosPorVencer ?? 0) + (data.contratosVencidos ?? 0) },
     ];
 
     return (
