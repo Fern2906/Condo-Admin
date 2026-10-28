@@ -23,7 +23,7 @@ class LocalController extends Controller
     {
         $locales = Local::with('locatario.residente')->orderBy('codigo')->get();
 
-        return Inertia::render('locales', [
+        return Inertia::render('features/locales/index', [
             'locales' => LocalResource::collection($locales)->resolve(),
         ]);
     }

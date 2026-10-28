@@ -21,7 +21,7 @@ class DashboardController extends Controller
             ->whereDate('fecha', today())
             ->whereIn('estado', ['pendiente', 'aprobada']);
 
-        return Inertia::render('dashboard', [
+        return Inertia::render('features/dashboard/index', [
             'stats' => [
                 'localesTotal' => Local::count(),
                 'localesOcupados' => Local::where('estado', 'Ocupado')->count(),

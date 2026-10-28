@@ -33,7 +33,7 @@ class ReservacionController extends Controller
         $usuarios = User::orderBy('name')
             ->get(['id', 'name', 'email']);
 
-        return Inertia::render('reservaciones', [
+        return Inertia::render('features/reservaciones/index', [
             'reservaciones' => ReservacionResource::collection($reservaciones)->resolve(),
             'areas'         => AreaComunResource::collection($areas)->resolve(),
             'usuarios'      => $usuarios->map(fn (User $u) => ['id' => $u->id, 'name' => $u->name, 'email' => $u->email]),
