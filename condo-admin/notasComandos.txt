@@ -1,0 +1,2 @@
+composer run dev
+php artisan reverb:start -> para iniciar el servidor con los web sockets

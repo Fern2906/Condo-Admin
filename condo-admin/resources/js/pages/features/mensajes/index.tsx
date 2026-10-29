@@ -1,38 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
-import {
-    ActionIcon,
-    Avatar,
-    Badge,
-    Box,
-    Button,
-    Card,
-    Center,
-    Divider,
-    Flex,
-    Grid,
-    Group,
-    ScrollArea,
-    Select,
-    Stack,
-    Text,
-    TextInput,
-    ThemeIcon,
-    Tooltip,
-} from '@mantine/core';
+import { ActionIcon, Avatar, Badge, Box, Button, Card, Center, Flex, Group, ScrollArea, Stack, Text, TextInput, ThemeIcon, Tooltip, } from '@mantine/core';
 import { Head } from '@inertiajs/react';
-import {
-    IconAlertCircle,
-    IconArrowLeft,
-    IconCheck,
-    IconChecks,
-    IconMessage,
-    IconPaperclip,
-    IconSearch,
-    IconSend,
-    IconUser,
-    IconWifi,
-    IconWifiOff,
-} from '@tabler/icons-react';
+import { IconArrowLeft, IconChecks, IconMessage, IconPaperclip, IconSearch, IconSend, IconUser, IconWifi, IconWifiOff, } from '@tabler/icons-react';
 
 import { PageLayout } from '@/layouts/sections/page-layout';
 import type { ContactoOption, CurrentUser, MensajeData, SolicitudOption } from '@/types/mensajes.types';
@@ -89,19 +58,17 @@ export default function MensajesPage({
             <Head title="Mensajes y Chat en Vivo" />
 
             <PageLayout
-                title="Mensajes y Chat en Vivo"
+                title="Mensajes"
                 headTitle="Mensajes"
-                description="Comunicación directa y en tiempo real entre administradores y residentes"
+                description=""
                 icon={IconMessage}
                 actions={
                     <Group gap="xs">
                         {live.connectionStatus === 'connected' ? (
                             <Badge color="green" variant="light" size="lg" leftSection={<IconWifi size={14} />}>
-                                WebSockets En Vivo
                             </Badge>
                         ) : (
                             <Badge color="yellow" variant="light" size="lg" leftSection={<IconWifiOff size={14} />}>
-                                Conectando WebSockets...
                             </Badge>
                         )}
                     </Group>
@@ -331,10 +298,6 @@ export default function MensajesPage({
                                                     </Text>
                                                 </Box>
                                             </Group>
-
-                                            <Badge color="green" variant="dot" size="sm">
-                                                Canal activo
-                                            </Badge>
                                         </Group>
                                     </Box>
 
@@ -353,9 +316,6 @@ export default function MensajesPage({
                                                     </ThemeIcon>
                                                     <Text size="sm" fw={600} c="dimmed">
                                                         Inicia la conversación con {live.selectedContacto.name}
-                                                    </Text>
-                                                    <Text size="xs" c="dimmed">
-                                                        Los mensajes se envían y reciben en tiempo real.
                                                     </Text>
                                                 </Stack>
                                             </Center>
