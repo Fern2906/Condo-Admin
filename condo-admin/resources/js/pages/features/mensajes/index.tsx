@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { ActionIcon, Avatar, Badge, Box, Button, Card, Center, Flex, Group, ScrollArea, Stack, Text, TextInput, ThemeIcon, Tooltip, } from '@mantine/core';
 import { Head } from '@inertiajs/react';
-import { IconArrowLeft, IconChecks, IconMessage, IconPaperclip, IconSearch, IconSend, IconUser, IconWifi, IconWifiOff, } from '@tabler/icons-react';
+import { IconArrowLeft, IconChecks, IconMessage, IconPaperclip, IconSearch, IconSend, IconUser, IconWifi, IconWifiOff,} from '@tabler/icons-react';
 
 import { PageLayout } from '@/layouts/sections/page-layout';
 import type { ContactoOption, CurrentUser, MensajeData, SolicitudOption } from '@/types/mensajes.types';
@@ -65,10 +65,12 @@ export default function MensajesPage({
                 actions={
                     <Group gap="xs">
                         {live.connectionStatus === 'connected' ? (
-                            <Badge color="green" variant="light" size="lg" leftSection={<IconWifi size={14} />}>
+                            <Badge color="green" size="lg">
+                                <IconWifi size={14} />
                             </Badge>
                         ) : (
-                            <Badge color="yellow" variant="light" size="lg" leftSection={<IconWifiOff size={14} />}>
+                            <Badge color="red" size="lg" >
+                                <IconWifiOff size={14} />
                             </Badge>
                         )}
                     </Group>
@@ -94,7 +96,6 @@ export default function MensajesPage({
                                 width: '100%',
                                 maxWidth: '340px',
                                 flexShrink: 0,
-                                borderRight: '1px solid var(--mantine-color-gray-3)',
                                 display: 'flex',
                                 flexDirection: 'column',
                                 height: '100%',
@@ -103,7 +104,7 @@ export default function MensajesPage({
                             className={mobileView === 'chat' ? 'contacts-panel-mobile-hidden' : ''}
                             visibleFrom="sm"
                         >
-                            <Box p="md" style={{ borderBottom: '1px solid var(--mantine-color-gray-3)' }}>
+                            <Box p="sm">
                                 <TextInput
                                     placeholder="Buscar contacto..."
                                     leftSection={<IconSearch size={16} />}
@@ -134,9 +135,8 @@ export default function MensajesPage({
                                                 style={{
                                                     cursor: 'pointer',
                                                     backgroundColor: isSelected
-                                                        ? 'var(--mantine-color-blue-0)'
+                                                        ? 'light-dark(var(--mantine-color-gray-2), var(--mantine-color-dark-5))'
                                                         : 'transparent',
-                                                    borderBottom: '1px solid var(--mantine-color-gray-2)',
                                                     transition: 'background-color 0.15s ease',
                                                 }}
                                             >
@@ -187,7 +187,7 @@ export default function MensajesPage({
                             hiddenFrom="sm"
                             display={mobileView === 'contacts' ? 'flex' : 'none'}
                         >
-                            <Box p="md" style={{ borderBottom: '1px solid var(--mantine-color-gray-3)' }}>
+                            <Box p="md">
                                 <TextInput
                                     placeholder="Buscar contacto..."
                                     leftSection={<IconSearch size={16} />}
@@ -211,9 +211,8 @@ export default function MensajesPage({
                                             style={{
                                                 cursor: 'pointer',
                                                 backgroundColor: isSelected
-                                                    ? 'var(--mantine-color-blue-0)'
+                                                    ? 'light-dark(var(--mantine-color-gray-2), var(--mantine-color-dark-5))'
                                                     : 'transparent',
-                                                borderBottom: '1px solid var(--mantine-color-gray-2)',
                                             }}
                                         >
                                             <Group wrap="nowrap" justify="space-between" align="center">
@@ -259,22 +258,13 @@ export default function MensajesPage({
                                 flexDirection: 'column',
                                 height: '100%',
                                 minHeight: 0,
-                                backgroundColor: 'var(--mantine-color-gray-0)',
                             }}
                             display={mobileView === 'chat' ? 'flex' : { base: 'none', sm: 'flex' }}
                         >
                             {live.selectedContacto ? (
                                 <>
                                     {/* Cabecera del chat */}
-                                    <Box
-                                        p="sm"
-                                        px="md"
-                                        style={{
-                                            backgroundColor: 'white',
-                                            borderBottom: '1px solid var(--mantine-color-gray-3)',
-                                            flexShrink: 0,
-                                        }}
-                                    >
+                                    <Box p="sm" px="md" style={{ flexShrink: 0 }}>
                                         <Group justify="space-between" align="center">
                                             <Group gap="sm">
                                                 <ActionIcon
@@ -311,7 +301,7 @@ export default function MensajesPage({
                                         {live.conversationMensajes.length === 0 ? (
                                             <Center h={280}>
                                                 <Stack align="center" gap="xs">
-                                                    <ThemeIcon size="xl" radius="xl" color="blue" variant="light">
+                                                    <ThemeIcon size="xl" radius="xl" color="blue">
                                                         <IconMessage size={24} />
                                                     </ThemeIcon>
                                                     <Text size="sm" fw={600} c="dimmed">
@@ -338,8 +328,8 @@ export default function MensajesPage({
                                                                         ? '16px 16px 4px 16px'
                                                                         : '16px 16px 16px 4px',
                                                                     backgroundColor: isMe
-                                                                        ? 'var(--mantine-color-blue-6)'
-                                                                        : 'white',
+                                                                        ? 'light-dark(var(--mantine-color-blue-6), var(--mantine-color-blue-8))'
+                                                                        : 'light-dark(var(--mantine-color-gray-2), var(--mantine-color-dark-0))',
                                                                     color: isMe ? 'white' : 'var(--mantine-color-dark-8)',
                                                                     boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
                                                                 }}
@@ -383,8 +373,6 @@ export default function MensajesPage({
                                         p="sm"
                                         px="md"
                                         style={{
-                                            backgroundColor: 'white',
-                                            borderTop: '1px solid var(--mantine-color-gray-3)',
                                             flexShrink: 0,
                                         }}
                                     >
