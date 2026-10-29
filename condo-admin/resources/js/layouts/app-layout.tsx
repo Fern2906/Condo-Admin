@@ -9,7 +9,7 @@ export default function AppLayout({ children }: Readonly<{ children: React.React
     ];
 
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', backgroundColor: 'var(--mantine-color-gray-0)' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
             <Navbar links={links} />
             <main style={{ flex: 1, paddingTop: 56 }}>
                 {children}

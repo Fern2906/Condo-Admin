@@ -1,4 +1,5 @@
 import '@mantine/core/styles.css';
+import '@mantine/dates/styles.css';
 
 import { createInertiaApp } from '@inertiajs/react';
 import { MantineProvider } from '@mantine/core';
@@ -10,6 +11,10 @@ import AuthLayout from '@/layouts/auth-layout';
 import SettingsLayout from '@/layouts/settings/layout';
 import { configureEcho } from '@laravel/echo-react';
 
+import dayjs from 'dayjs';
+import 'dayjs/locale/es';
+
+dayjs.locale('es');
 configureEcho({
     broadcaster: 'reverb',
 });
@@ -32,7 +37,7 @@ void createInertiaApp({
     strictMode: true,
     withApp(app) {
         return (
-            <MantineProvider>
+            <MantineProvider defaultColorScheme="auto">
                 <TooltipProvider delayDuration={0}>
                     {app}
                     <Toaster />
