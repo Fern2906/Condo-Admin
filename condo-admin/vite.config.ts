@@ -38,6 +38,7 @@ export default defineConfig({
                 '**/vendor/**',
             ],
         },
+        host: '0.0.0.0',
     },
     lint: {
         ignorePatterns: [
