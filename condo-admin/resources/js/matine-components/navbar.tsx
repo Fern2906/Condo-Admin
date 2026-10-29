@@ -1,8 +1,8 @@
-import { Burger, Container, Divider, Drawer, ScrollArea, Group, FloatingIndicator } from '@mantine/core';
+import { Burger, Container, Divider, Drawer, ScrollArea, Group, FloatingIndicator, Title, useMantineTheme, Text } from '@mantine/core';
 import { Link } from '@inertiajs/react';
 import { useDisclosure } from '@mantine/hooks';
 import { useState } from 'react';
-
+import { Building2Icon } from 'lucide-react';
 import classes from '../../css/navbar.module.css';
 
 interface NavbarLink {
@@ -14,6 +14,26 @@ interface NavbarProps {
     links: NavbarLink[];
 }
 
+interface LogoProps {
+    width?: number;
+    height?: number;
+}
+
+function CondoAdminLogo({ width = 28, height = 28 }: Readonly<LogoProps>) {
+    const theme = useMantineTheme();
+
+    return (
+        <svg
+            width={width}
+            height={height}
+            viewBox="0 0 32 32"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+        >
+            <Building2Icon width={width} height={height} color={theme.colors.blue[6]} />
+        </svg>
+    );
+}
 export default function Navbar({ links }: Readonly<NavbarProps>) {
     const [opened, { toggle, close }] = useDisclosure(false);
     const [active, setActive] = useState(links[0]?.link ?? '');
@@ -44,8 +64,13 @@ export default function Navbar({ links }: Readonly<NavbarProps>) {
     return (
         <header className={classes.header} style={{ zIndex: 1000001 }}>
             <Container size="md" className={classes.inner}>
-                <Link href="/" aria-label="Inicio">
-                    <span>CONDO ADMIN</span>
+                <Link href="/" aria-label="Inicio" style={{ textDecoration: 'none', color: 'inherit' }}>
+                    <Group gap={10} align="center">
+                        <CondoAdminLogo width={30} height={30} />
+                        <Text fw={800} size="lg" style={{ letterSpacing: '-0.3px' }}>
+                            CONDO ADMIN
+                        </Text>
+                    </Group>
                 </Link>
 
                 <Group gap={5} visibleFrom="xs" ref={setRootRef} style={{ position: 'relative' }}>

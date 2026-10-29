@@ -62,18 +62,6 @@ export default function Dashboard({ stats: data }: { stats: DashboardStats }) {
             color: 'orange',
             description: `${data.reservacionesHoyAprobadas} aprobadas`,
         },
-        {
-            title: 'Contratos Activos',
-            value: data.contratosTotal ?? 0,
-            icon: IconFileCertificate,
-            color: 'cyan',
-            description:
-                (data.contratosPorVencer ?? 0) > 0
-                    ? `${data.contratosPorVencer} por vencer (30 días)`
-                    : (data.contratosVencidos ?? 0) > 0
-                    ? `${data.contratosVencidos} vencidos`
-                    : 'Control y vigencias',
-        },
     ];
 
     const quickActions = [
@@ -82,9 +70,7 @@ export default function Dashboard({ stats: data }: { stats: DashboardStats }) {
         { title: 'Cuotas y pagos', description: 'Control financiero y cobranza', icon: IconReceiptTax, color: 'green', href: '/pagos', badge: data.pagosPendientes },
         { title: 'Incidencias', description: 'Seguimiento y atención', icon: IconReport, color: 'red', href: incidenciasIndex.url(), badge: data.incidenciasAbiertas },
         { title: 'Reservaciones', description: 'Áreas comunes', icon: IconCalendarClock, color: 'orange', href: reservacionesIndex.url(), badge: data.reservacionesHoy },
-        { title: 'Avisos', description: 'Comunicación general', icon: IconBell, color: 'yellow', href: avisosIndex.url(), badge: data.avisosVigentes },
         { title: 'Reportes', description: 'Estadísticas y análisis', icon: IconChartBar, color: 'teal', href: '/reportes' },
-        { title: 'Mensajes', description: 'Chat en vivo y solicitudes', icon: IconMessage, color: 'pink', href: '/mensajes', badge: data.solicitudesPendientes },
         { title: 'Contratos', description: 'Vigencias y asignaciones', icon: IconFileCertificate, color: 'cyan', href: contratosIndex.url(), badge: (data.contratosPorVencer ?? 0) + (data.contratosVencidos ?? 0) },
     ];
 
@@ -99,9 +85,9 @@ export default function Dashboard({ stats: data }: { stats: DashboardStats }) {
                     icon={<IconChartBar size={40} color="var(--mantine-color-blue-8)" />}
                 />
 
-                <SimpleGrid cols={{ base: 1, sm: 2, lg: 4 }} spacing="md">
+                <SimpleGrid cols={{ base: 1, sm: 2, lg: 3 }} spacing="md">
                     {kpis.map((kpi) => (
-                        <Card key={kpi.title} withBorder radius="lg" padding="lg" shadow="sm">
+                        <Card key={kpi.title} withBorder radius="lg" padding="lg" shadow="sm" className='transition-all duration-200 hover:-translate-y-1 hover:shadow-md hover:border-blue-400/60'>
                             <Group justify="space-between" align="flex-start" wrap="nowrap">
                                 <Stack gap="xs">
                                     <Text size="xs" c="dimmed" tt="uppercase" fw={700}>
@@ -133,21 +119,21 @@ export default function Dashboard({ stats: data }: { stats: DashboardStats }) {
                     <Group justify="space-between" mb="lg" wrap="wrap">
                         <Stack gap={4}>
                             <Title order={3} fw={600}>
-                                Acciones Rápidas
+                                Acciones
                             </Title>
                             <Text size="sm" c="dimmed">
                                 Accede rápidamente a las funciones principales
                             </Text>
                         </Stack>
                     </Group>
-                    <SimpleGrid cols={{ base: 1, xs: 2, sm: 3, md: 4, lg: 5 }} spacing="md">
+                    <SimpleGrid cols={{ base: 1, xs: 2, sm: 2, md: 3, lg: 4 }} spacing="md">
                         {quickActions.map((action) => (
                             <Card
                                 key={action.title}
                                 component={action.href ? Link : 'div'}
                                 href={action.href}
                                 withBorder
-                                radius="md"
+                                radius="lg"
                                 padding="md"
                                 className={action.href ? 'group cursor-pointer transition-all duration-200 hover:-translate-y-1 hover:shadow-md hover:border-blue-400/60' : 'opacity-60'}
                                 style={{
