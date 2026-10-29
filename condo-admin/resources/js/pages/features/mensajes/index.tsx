@@ -1,9 +1,10 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
     ActionIcon,
     Avatar,
     Badge,
     Box,
+    Button,
     Card,
     Center,
     Divider,
@@ -21,6 +22,7 @@ import {
 import { Head } from '@inertiajs/react';
 import {
     IconAlertCircle,
+    IconArrowLeft,
     IconCheck,
     IconChecks,
     IconMessage,
@@ -52,14 +54,31 @@ export default function MensajesPage({
     currentUser,
 }: MensajesPageProps) {
     const live = useMensajesLive(initialMensajes, contactos, solicitudes, currentUser);
-    const actions = useMensajesActions(live.selectedContactoId);
+    const actions = useMensajesActions(live.selectedContactoId, (newMsg) => {
+        live.setMensajes((prev) => {
+            if (prev.some((m) => m.id === newMsg.id)) return prev;
+            return [...prev, newMsg];
+        });
+    });
 
-    const messagesEndRef = useRef<HTMLDivElement | null>(null);
+    // En pantallas móviles: controlar si estamos viendo los contactos o la conversación
+    const [mobileView, setMobileView] = useState<'contacts' | 'chat'>('chat');
+    const viewportRef = useRef<HTMLDivElement | null>(null);
 
-    // Auto scroll al final cuando llega o se envía un mensaje
+    // Auto scroll al final dentro del contenedor con scroll sin mover la ventana exterior
     useEffect(() => {
-        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-    }, [live.conversationMensajes.length]);
+        if (viewportRef.current) {
+            viewportRef.current.scrollTo({
+                top: viewportRef.current.scrollHeight,
+                behavior: 'smooth',
+            });
+        }
+    }, [live.conversationMensajes.length, live.selectedContactoId]);
+
+    const handleSelectContact = (contactId: number) => {
+        live.setSelectedContactoId(contactId);
+        setMobileView('chat');
+    };
 
     const solicitudesOptions = solicitudes
         .filter((s) => !live.selectedContactoId || s.usuarioId === live.selectedContactoId)
@@ -88,17 +107,34 @@ export default function MensajesPage({
                     </Group>
                 }
             >
-                <Card withBorder radius="md" p={0} style={{ overflow: 'hidden', height: 'calc(100vh - 240px)', minHeight: 520 }}>
-                    <Grid gutter={0} h="100%">
+                <Card
+                    withBorder
+                    radius="md"
+                    p={0}
+                    style={{
+                        height: 'calc(100vh - 210px)',
+                        minHeight: 500,
+                        maxHeight: 'calc(100vh - 210px)',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        overflow: 'hidden',
+                    }}
+                >
+                    <Box style={{ flex: 1, minHeight: 0, display: 'flex', width: '100%', height: '100%' }}>
                         {/* Panel izquierdo: Lista de contactos */}
-                        <Grid.Col
-                            span={{ base: 12, md: 4 }}
+                        <Box
                             style={{
+                                width: '100%',
+                                maxWidth: '340px',
+                                flexShrink: 0,
                                 borderRight: '1px solid var(--mantine-color-gray-3)',
                                 display: 'flex',
                                 flexDirection: 'column',
                                 height: '100%',
+                                minHeight: 0,
                             }}
+                            className={mobileView === 'chat' ? 'contacts-panel-mobile-hidden' : ''}
+                            visibleFrom="sm"
                         >
                             <Box p="md" style={{ borderBottom: '1px solid var(--mantine-color-gray-3)' }}>
                                 <TextInput
@@ -110,7 +146,7 @@ export default function MensajesPage({
                                 />
                             </Box>
 
-                            <ScrollArea style={{ flex: 1 }}>
+                            <ScrollArea style={{ flex: 1, minHeight: 0 }}>
                                 {live.filteredContactos.length === 0 ? (
                                     <Center p="xl">
                                         <Text size="sm" c="dimmed">
@@ -127,7 +163,7 @@ export default function MensajesPage({
                                             <Box
                                                 key={contacto.id}
                                                 p="md"
-                                                onClick={() => live.setSelectedContactoId(contacto.id)}
+                                                onClick={() => handleSelectContact(contacto.id)}
                                                 style={{
                                                     cursor: 'pointer',
                                                     backgroundColor: isSelected
@@ -170,30 +206,119 @@ export default function MensajesPage({
                                     })
                                 )}
                             </ScrollArea>
-                        </Grid.Col>
+                        </Box>
 
-                        {/* Panel derecho: Chat activo */}
-                        <Grid.Col
-                            span={{ base: 12, md: 8 }}
+                        {/* Versión solo para móviles del selector de contactos cuando está en vista contactos */}
+                        <Box
                             style={{
+                                width: '100%',
                                 display: 'flex',
                                 flexDirection: 'column',
                                 height: '100%',
+                                minHeight: 0,
+                            }}
+                            hiddenFrom="sm"
+                            display={mobileView === 'contacts' ? 'flex' : 'none'}
+                        >
+                            <Box p="md" style={{ borderBottom: '1px solid var(--mantine-color-gray-3)' }}>
+                                <TextInput
+                                    placeholder="Buscar contacto..."
+                                    leftSection={<IconSearch size={16} />}
+                                    value={live.searchContacto}
+                                    onChange={(e) => live.setSearchContacto(e.currentTarget.value)}
+                                    size="sm"
+                                />
+                            </Box>
+
+                            <ScrollArea style={{ flex: 1, minHeight: 0 }}>
+                                {live.filteredContactos.map((contacto) => {
+                                    const isSelected = contacto.id === live.selectedContactoId;
+                                    const unread = live.unreadCountByContact[contacto.id] || 0;
+                                    const lastMsg = live.lastMessageByContact[contacto.id];
+
+                                    return (
+                                        <Box
+                                            key={contacto.id}
+                                            p="md"
+                                            onClick={() => handleSelectContact(contacto.id)}
+                                            style={{
+                                                cursor: 'pointer',
+                                                backgroundColor: isSelected
+                                                    ? 'var(--mantine-color-blue-0)'
+                                                    : 'transparent',
+                                                borderBottom: '1px solid var(--mantine-color-gray-2)',
+                                            }}
+                                        >
+                                            <Group wrap="nowrap" justify="space-between" align="center">
+                                                <Group gap="sm" wrap="nowrap" style={{ overflow: 'hidden' }}>
+                                                    <Avatar color={isSelected ? 'blue' : 'gray'} radius="xl">
+                                                        {contacto.name.charAt(0).toUpperCase()}
+                                                    </Avatar>
+                                                    <Box style={{ overflow: 'hidden' }}>
+                                                        <Text size="sm" fw={isSelected ? 700 : 500} truncate>
+                                                            {contacto.name}
+                                                        </Text>
+                                                        <Text size="xs" c="dimmed" truncate>
+                                                            {lastMsg ? lastMsg.mensaje : contacto.email}
+                                                        </Text>
+                                                    </Box>
+                                                </Group>
+
+                                                <Stack gap={4} align="flex-end" style={{ flexShrink: 0 }}>
+                                                    {lastMsg && (
+                                                        <Text size="xs" c="dimmed">
+                                                            {formatMessageTime(lastMsg.createdAt, lastMsg.hora)}
+                                                        </Text>
+                                                    )}
+                                                    {unread > 0 && (
+                                                        <Badge size="xs" color="blue" variant="filled" circle>
+                                                            {unread}
+                                                        </Badge>
+                                                    )}
+                                                </Stack>
+                                            </Group>
+                                        </Box>
+                                    );
+                                })}
+                            </ScrollArea>
+                        </Box>
+
+                        {/* Panel derecho: Chat activo con ScrollArea propio e independiente */}
+                        <Box
+                            style={{
+                                flex: 1,
+                                minWidth: 0,
+                                display: 'flex',
+                                flexDirection: 'column',
+                                height: '100%',
+                                minHeight: 0,
                                 backgroundColor: 'var(--mantine-color-gray-0)',
                             }}
+                            display={mobileView === 'chat' ? 'flex' : { base: 'none', sm: 'flex' }}
                         >
                             {live.selectedContacto ? (
                                 <>
                                     {/* Cabecera del chat */}
                                     <Box
-                                        p="md"
+                                        p="sm"
+                                        px="md"
                                         style={{
                                             backgroundColor: 'white',
                                             borderBottom: '1px solid var(--mantine-color-gray-3)',
+                                            flexShrink: 0,
                                         }}
                                     >
                                         <Group justify="space-between" align="center">
                                             <Group gap="sm">
+                                                <ActionIcon
+                                                    variant="subtle"
+                                                    color="gray"
+                                                    hiddenFrom="sm"
+                                                    onClick={() => setMobileView('contacts')}
+                                                    aria-label="Ver contactos"
+                                                >
+                                                    <IconArrowLeft size={20} />
+                                                </ActionIcon>
                                                 <Avatar color="blue" radius="xl">
                                                     {live.selectedContacto.name.charAt(0).toUpperCase()}
                                                 </Avatar>
@@ -213,10 +338,15 @@ export default function MensajesPage({
                                         </Group>
                                     </Box>
 
-                                    {/* Flujo de mensajes */}
-                                    <ScrollArea style={{ flex: 1 }} p="md">
+                                    {/* Flujo de mensajes con ScrollArea confinado */}
+                                    <ScrollArea
+                                        style={{ flex: 1, minHeight: 0 }}
+                                        viewportRef={viewportRef}
+                                        p="md"
+                                        offsetScrollbars
+                                    >
                                         {live.conversationMensajes.length === 0 ? (
-                                            <Center h={300}>
+                                            <Center h={280}>
                                                 <Stack align="center" gap="xs">
                                                     <ThemeIcon size="xl" radius="xl" color="blue" variant="light">
                                                         <IconMessage size={24} />
@@ -243,7 +373,7 @@ export default function MensajesPage({
                                                                 p="xs"
                                                                 px="sm"
                                                                 style={{
-                                                                    maxWidth: '75%',
+                                                                    maxWidth: '80%',
                                                                     borderRadius: isMe
                                                                         ? '16px 16px 4px 16px'
                                                                         : '16px 16px 16px 4px',
@@ -284,17 +414,18 @@ export default function MensajesPage({
                                                         </Flex>
                                                     );
                                                 })}
-                                                <div ref={messagesEndRef} />
                                             </Stack>
                                         )}
                                     </ScrollArea>
 
-                                    {/* Barra inferior para escribir mensaje */}
+                                    {/* Barra inferior para escribir mensaje fija al pie del contenedor */}
                                     <Box
-                                        p="md"
+                                        p="sm"
+                                        px="md"
                                         style={{
                                             backgroundColor: 'white',
                                             borderTop: '1px solid var(--mantine-color-gray-3)',
+                                            flexShrink: 0,
                                         }}
                                     >
                                         {solicitudesOptions.length > 0 && actions.selectedSolicitudId !== null && (
@@ -370,11 +501,18 @@ export default function MensajesPage({
                                         <Text size="md" fw={600} c="dimmed">
                                             Selecciona un contacto para iniciar una conversación en vivo
                                         </Text>
+                                        <Button
+                                            hiddenFrom="sm"
+                                            variant="light"
+                                            onClick={() => setMobileView('contacts')}
+                                        >
+                                            Ver lista de contactos
+                                        </Button>
                                     </Stack>
                                 </Center>
                             )}
-                        </Grid.Col>
-                    </Grid>
+                        </Box>
+                    </Box>
                 </Card>
             </PageLayout>
         </>

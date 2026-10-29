@@ -9,18 +9,24 @@ export const useMensajesLive = (
     currentUser: CurrentUser
 ) => {
     const [mensajes, setMensajes] = useState<MensajeData[]>(initialMensajes);
-    const [selectedContactoId, setSelectedContactoId] = useState<number | null>(
-        contactos.length > 0 ? contactos[0].id : null
-    );
+    const [selectedContactoId, setSelectedContactoId] = useState<number | null>(() => {
+        return contactos.length > 0 ? contactos[0].id : null;
+    });
     const [searchContacto, setSearchContacto] = useState('');
     const connectionStatus = useConnectionStatus();
 
-    // Sincronizar si cambian los props iniciales
+    // Sincronizar si llegan props actualizados desde Inertia pero sin resetear selectedContactoId
     useEffect(() => {
-        setMensajes(initialMensajes);
+        setMensajes((prev) => {
+            const existingIds = new Set(prev.map((m) => m.id));
+            const newOnes = initialMensajes.filter((m) => !existingIds.has(m.id));
+            if (newOnes.length === 0) return prev;
+            return [...prev, ...newOnes];
+        });
     }, [initialMensajes]);
 
     // Escucha en tiempo real por WebSockets (Canal público general de chat del condominio)
+    // Escuchar tanto 'MensajeEnviado' como '.MensajeEnviado'
     useEchoPublic<{ mensaje: MensajeData }>(
         'chat.condominio',
         'MensajeEnviado',
@@ -28,7 +34,22 @@ export const useMensajesLive = (
             if (!payload?.mensaje) return;
 
             setMensajes((prev) => {
-                // Evitar duplicados
+                if (prev.some((m) => m.id === payload.mensaje.id)) {
+                    return prev;
+                }
+                return [...prev, payload.mensaje];
+            });
+        },
+        []
+    );
+
+    useEchoPublic<{ mensaje: MensajeData }>(
+        'chat.condominio',
+        '.MensajeEnviado',
+        (payload) => {
+            if (!payload?.mensaje) return;
+
+            setMensajes((prev) => {
                 if (prev.some((m) => m.id === payload.mensaje.id)) {
                     return prev;
                 }
@@ -44,16 +65,20 @@ export const useMensajesLive = (
         [contactos, selectedContactoId]
     );
 
-    // Filtro de lista de contactos
-    const filteredContactos = useMemo(() => {
-        const query = searchContacto.toLowerCase().trim();
-        return contactos.filter(
-            (c) =>
-                query === '' ||
-                c.name.toLowerCase().includes(query) ||
-                c.email.toLowerCase().includes(query)
-        );
-    }, [contactos, searchContacto]);
+    // Último mensaje por contacto
+    const lastMessageByContact = useMemo(() => {
+        const last: Record<number, MensajeData> = {};
+        mensajes.forEach((m) => {
+            const otherId = m.emisorId === currentUser.id ? m.receptorId : m.emisorId;
+            if (otherId) {
+                const current = last[otherId];
+                if (!current || new Date(m.createdAt).getTime() > new Date(current.createdAt).getTime()) {
+                    last[otherId] = m;
+                }
+            }
+        });
+        return last;
+    }, [mensajes, currentUser.id]);
 
     // Mensajes de la conversación activa con el contacto seleccionado
     const conversationMensajes = useMemo(() => {
@@ -77,17 +102,32 @@ export const useMensajesLive = (
         return counts;
     }, [mensajes, currentUser.id]);
 
-    // Último mensaje por contacto
-    const lastMessageByContact = useMemo(() => {
-        const last: Record<number, MensajeData> = {};
-        mensajes.forEach((m) => {
-            const otherId = m.emisorId === currentUser.id ? m.receptorId : m.emisorId;
-            if (otherId) {
-                last[otherId] = m;
+    // Filtro y ordenamiento de lista de contactos: los más recientes arriba
+    const filteredContactos = useMemo(() => {
+        const query = searchContacto.toLowerCase().trim();
+        const filtered = contactos.filter(
+            (c) =>
+                query === '' ||
+                c.name.toLowerCase().includes(query) ||
+                c.email.toLowerCase().includes(query)
+        );
+
+        return [...filtered].sort((a, b) => {
+            const lastMsgA = lastMessageByContact[a.id];
+            const lastMsgB = lastMessageByContact[b.id];
+
+            const timeA = lastMsgA ? new Date(lastMsgA.createdAt).getTime() : 0;
+            const timeB = lastMsgB ? new Date(lastMsgB.createdAt).getTime() : 0;
+
+            // Más reciente primero
+            if (timeA !== timeB) {
+                return timeB - timeA;
             }
+
+            // Si ninguno tiene mensajes, ordenar alfabéticamente
+            return a.name.localeCompare(b.name);
         });
-        return last;
-    }, [mensajes, currentUser.id]);
+    }, [contactos, searchContacto, lastMessageByContact]);
 
     return {
         mensajes,

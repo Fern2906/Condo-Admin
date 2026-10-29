@@ -59,7 +59,7 @@ class MensajeController extends Controller
     /**
      * Envía un mensaje y lo transmite en tiempo real vía WebSockets.
      */
-    public function store(MensajeRequest $request): RedirectResponse
+    public function store(MensajeRequest $request): JsonResponse|RedirectResponse
     {
         $mensaje = Mensaje::create([
             'emisor_id' => $request->user()->id,
@@ -69,8 +69,17 @@ class MensajeController extends Controller
             'leido' => false,
         ]);
 
+        $mensaje->load(['emisor', 'receptor', 'solicitud']);
+
         // Transmisión inmediata por WebSockets (Laravel Reverb)
         broadcast(new MensajeEnviado($mensaje));
+
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'mensaje' => new MensajeResource($mensaje),
+            ]);
+        }
 
         return back();
     }
