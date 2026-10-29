@@ -1,22 +1,37 @@
 .footer {
-  margin-top: auto;
-  border-top: 1px solid light-dark(var(--mantine-color-gray-2), var(--mantine-color-dark-5));
+    border-top: 1px solid var(--mantine-color-default-border);
+    background-color: var(--mantine-color-body);
+    margin-top: auto;
 }
 
 .inner {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding-top: var(--mantine-spacing-xl);
-  padding-bottom: var(--mantine-spacing-xl);
-
-  @media (max-width: $mantine-breakpoint-xs) {
-    flex-direction: column;
-  }
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: var(--mantine-spacing-md);
+    padding-bottom: var(--mantine-spacing-md);
 }
 
 .links {
-  @media (max-width: $mantine-breakpoint-xs) {
-    margin-top: var(--mantine-spacing-md);
-  }
+    gap: var(--mantine-spacing-md);
+}
+
+.bottom {
+    border-top: 1px solid var(--mantine-color-default-border);
+    padding-top: var(--mantine-spacing-xs);
+    padding-bottom: var(--mantine-spacing-xs);
+    text-align: center;
+}
+
+@media (max-width: $mantine-breakpoint-xs) {
+    .inner {
+        flex-direction: column;
+        gap: var(--mantine-spacing-md);
+    }
+
+    .links {
+        flex-direction: column;
+        align-items: center;
+        gap: var(--mantine-spacing-xs);
+    }
 }

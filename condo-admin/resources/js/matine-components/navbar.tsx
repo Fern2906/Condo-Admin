@@ -62,7 +62,7 @@ export default function Navbar({ links }: Readonly<NavbarProps>) {
     ));
 
     return (
-        <header className={classes.header} style={{ zIndex: 1000001 }}>
+        <header className={classes.header} style={{ zIndex: 10 }}>
             <Container size="md" className={classes.inner}>
                 <Link href="/" aria-label="Inicio" style={{ textDecoration: 'none', color: 'inherit' }}>
                     <Group gap={10} align="center">

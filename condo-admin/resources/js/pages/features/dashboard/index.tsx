@@ -1,15 +1,12 @@
 import { Head, Link } from '@inertiajs/react';
-import { Badge, Box, Card, Group, SimpleGrid, Stack, Text, ThemeIcon, Title } from '@mantine/core';
+import { Badge, Card, Group, SimpleGrid, Stack, Text, ThemeIcon, Title } from '@mantine/core';
 import {
     IconArrowRight,
-    IconBell,
     IconBuildingStore,
     IconCalendarClock,
     IconChartBar,
     IconFileCertificate,
-    IconFileReport,
     IconHome,
-    IconMessage,
     IconReceiptTax,
     IconReport,
     IconUsers,
@@ -19,7 +16,6 @@ import { index as localesIndex } from '@/routes/locales';
 import { index as usersIndex } from '@/routes/users';
 import { index as reservacionesIndex } from '@/routes/reservaciones';
 import { index as incidenciasIndex } from '@/routes/incidencias';
-import { index as avisosIndex } from '@/routes/avisos';
 import { index as contratosIndex } from '@/routes/contratos';
 
 interface DashboardStats {
@@ -80,9 +76,9 @@ export default function Dashboard({ stats: data }: { stats: DashboardStats }) {
 
             <Stack gap="xl" p={{ base: 'sm', md: 'md' }} w="100%" h="100%">
                 <TittlePage
-                    title="Panel de Administración"
+                    title="Dashboard"
                     message="Resumen general del condominio"
-                    icon={<IconChartBar size={40} color="var(--mantine-color-blue-8)" />}
+                    icon={<IconChartBar size={40} color="var(--mantine-color-cyan-8)" />}
                 />
 
                 <SimpleGrid cols={{ base: 1, sm: 2, lg: 3 }} spacing="md">
