@@ -21,7 +21,7 @@ class DashboardController extends Controller
     {
         $reservacionesHoy = Reservacion::query()
             ->whereDate('fecha', today())
-            ->whereIn('estado', ['pendiente', 'aprobada']);
+            ->whereIn('estado', ['pendiente']);
 
         $contratosPorVencer = ResidenteLocal::query()
             ->whereNotNull('fecha_fin')
@@ -41,7 +41,7 @@ class DashboardController extends Controller
                 'incidenciasAbiertas' => Incidencia::abiertas()->count(),
                 'incidenciasSinAtender' => Incidencia::where('estado', 'abierta')->count(),
                 'reservacionesHoy' => (clone $reservacionesHoy)->count(),
-                'reservacionesHoyAprobadas' => (clone $reservacionesHoy)->where('estado', 'aprobada')->count(),
+                'reservacionesHoyAprobadas' => (clone $reservacionesHoy)->where('estado', 'pendiente')->count(),
                 'avisosVigentes' => Aviso::vigentes()->count(),
                 'solicitudesPendientes' => Solicitud::where('estado', 'pendiente')->count(),
                 'contratosTotal' => ResidenteLocal::count(),
