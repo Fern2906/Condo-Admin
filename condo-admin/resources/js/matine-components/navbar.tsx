@@ -1,8 +1,12 @@
-import { Burger, Container, Divider, Drawer, ScrollArea, Group, FloatingIndicator, Title, useMantineTheme, Text } from '@mantine/core';
-import { Link } from '@inertiajs/react';
+import { Avatar, Burger, Button, Container, Divider, Drawer, ScrollArea, Group, FloatingIndicator, Menu, Stack, UnstyledButton, useMantineTheme, Text } from '@mantine/core';
+import { Link, router, usePage } from '@inertiajs/react';
 import { useDisclosure } from '@mantine/hooks';
 import { useState } from 'react';
 import { Building2Icon } from 'lucide-react';
+import { IconChevronDown, IconLogout, IconSettings } from '@tabler/icons-react';
+import { useInitials } from '@/hooks/use-initials';
+import { logout } from '@/routes';
+import { edit } from '@/routes/profile';
 import classes from '../../css/navbar.module.css';
 
 interface NavbarLink {
@@ -35,7 +39,15 @@ function CondoAdminLogo({ width = 28, height = 28 }: Readonly<LogoProps>) {
     );
 }
 export default function Navbar({ links }: Readonly<NavbarProps>) {
+    const { auth } = usePage().props;
+    const getInitials = useInitials();
     const [opened, { toggle, close }] = useDisclosure(false);
+
+    const handleLogout = () => {
+        close();
+        router.flushAll();
+        router.post(logout.url());
+    };
     const [active, setActive] = useState(links[0]?.link ?? '');
 
     const [rootRef, setRootRef] = useState<HTMLDivElement | null>(null);
@@ -82,6 +94,39 @@ export default function Navbar({ links }: Readonly<NavbarProps>) {
                     />
                 </Group>
 
+                {auth.user && (
+                    <Menu position="bottom-end" shadow="md" width={220}>
+                        <Menu.Target>
+                            <UnstyledButton visibleFrom="xs" aria-label="Menú de usuario">
+                                <Group gap={8} wrap="nowrap">
+                                    <Avatar src={auth.user.avatar} color="blue" radius="xl" size={30}>
+                                        {getInitials(auth.user.name)}
+                                    </Avatar>
+                                    <Text size="sm" fw={600} maw={140} truncate>
+                                        {auth.user.name}
+                                    </Text>
+                                    <IconChevronDown size={14} />
+                                </Group>
+                            </UnstyledButton>
+                        </Menu.Target>
+                        <Menu.Dropdown>
+                            <Menu.Label>{auth.user.email}</Menu.Label>
+                            <Menu.Item component={Link} href={edit.url()} leftSection={<IconSettings size={14} />}>
+                                Configuración
+                            </Menu.Item>
+                            <Menu.Divider />
+                            <Menu.Item
+                                color="red"
+                                leftSection={<IconLogout size={14} />}
+                                onClick={handleLogout}
+                                data-test="logout-button"
+                            >
+                                Cerrar sesión
+                            </Menu.Item>
+                        </Menu.Dropdown>
+                    </Menu>
+                )}
+
                 <Burger
                     opened={opened}
                     onClick={toggle}
@@ -105,6 +150,40 @@ export default function Navbar({ links }: Readonly<NavbarProps>) {
                     <Group gap="sm" p="md">
                         {items}
                     </Group>
+
+                    {auth.user && (
+                        <>
+                            <Divider my="sm" />
+                            <Stack gap="sm" p="md">
+                                <Group gap={10} wrap="nowrap">
+                                    <Avatar src={auth.user.avatar} color="blue" radius="xl">
+                                        {getInitials(auth.user.name)}
+                                    </Avatar>
+                                    <div style={{ minWidth: 0 }}>
+                                        <Text size="sm" fw={600} truncate>{auth.user.name}</Text>
+                                        <Text size="xs" c="dimmed" truncate>{auth.user.email}</Text>
+                                    </div>
+                                </Group>
+                                <Button
+                                    component={Link}
+                                    href={edit.url()}
+                                    variant="light"
+                                    leftSection={<IconSettings size={16} />}
+                                    onClick={close}
+                                >
+                                    Configuración
+                                </Button>
+                                <Button
+                                    color="red"
+                                    variant="light"
+                                    leftSection={<IconLogout size={16} />}
+                                    onClick={handleLogout}
+                                >
+                                    Cerrar sesión
+                                </Button>
+                            </Stack>
+                        </>
+                    )}
                 </ScrollArea>
             </Drawer>
         </header>
