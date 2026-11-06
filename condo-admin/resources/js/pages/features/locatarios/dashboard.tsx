@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Head, Link, router } from '@inertiajs/react';
+import { Head, router } from '@inertiajs/react';
 import {
     Alert,
     Badge,
@@ -9,7 +9,6 @@ import {
     Group,
     Modal,
     NumberInput,
-    Paper,
     Select,
     SimpleGrid,
     Stack,
@@ -23,28 +22,17 @@ import {
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import {
-    IconAlertCircle,
-    IconAlertTriangle,
-    IconArrowRight,
-    IconBell,
     IconBuildingStore,
     IconCalendar,
     IconCalendarClock,
     IconCalendarPlus,
     IconCheck,
     IconClock,
-    IconCreditCard,
     IconFileCertificate,
     IconInfoCircle,
-    IconMail,
-    IconMapPin,
-    IconMessage,
-    IconMessageCircle,
     IconPlus,
-    IconReceipt,
     IconReceiptTax,
     IconReport,
-    IconUserCheck,
 } from '@tabler/icons-react';
 import { toast } from 'sonner';
 import { TittlePage } from '@/matine-components/tittle-page';
@@ -371,36 +359,10 @@ export default function LocatarioDashboard({
                         message="Panel de control para la gestión de tu local, pagos, incidencias y servicios"
                         icon={<IconBuildingStore size={40} color="var(--mantine-color-blue-6)" />}
                     />
-                    <Group gap="xs">
-                        <Button
-                            variant="filled"
-                            color="blue"
-                            leftSection={<IconReport size={18} />}
-                            onClick={openIncidencia}
-                        >
-                            Reportar Incidencia
-                        </Button>
-                        <Button
-                            variant="light"
-                            color="cyan"
-                            leftSection={<IconCalendarPlus size={18} />}
-                            onClick={openReservacion}
-                        >
-                            Reservar Área
-                        </Button>
-                        <Button
-                            variant="light"
-                            color="teal"
-                            leftSection={<IconCreditCard size={18} />}
-                            onClick={openPago}
-                        >
-                            Reportar Pago
-                        </Button>
-                    </Group>
                 </Group>
 
                 {/* KPIs / Tarjetas Rápidas de Resumen */}
-                <SimpleGrid cols={{ base: 1, sm: 2, lg: 4 }} spacing="md">
+                <SimpleGrid cols={{ base: 1, sm: 2, lg: 3}} spacing="md">
                     {/* Local */}
                     <Card withBorder radius="lg" padding="md" shadow="sm">
                         <Group justify="space-between" align="flex-start" wrap="nowrap">
@@ -466,42 +428,6 @@ export default function LocatarioDashboard({
                             </ThemeIcon>
                         </Group>
                     </Card>
-
-                    {/* Mensajes */}
-                    <Card
-                        component={Link}
-                        href="/mensajes"
-                        withBorder
-                        radius="lg"
-                        padding="md"
-                        shadow="sm"
-                        style={{ textDecoration: 'none', color: 'inherit' }}
-                        className="transition-all duration-200 hover:-translate-y-1 hover:shadow-md hover:border-violet-400/60"
-                    >
-                        <Group justify="space-between" align="flex-start" wrap="nowrap">
-                            <Stack gap={2}>
-                                <Text size="xs" c="dimmed" tt="uppercase" fw={700}>
-                                    Mensajería
-                                </Text>
-                                <Group gap={6} align="center">
-                                    <Title order={3} fw={700}>
-                                        Chat en vivo
-                                    </Title>
-                                    {mensajesNoLeidos > 0 && (
-                                        <Badge color="red" size="sm" variant="filled">
-                                            {mensajesNoLeidos} nuevo{mensajesNoLeidos > 1 ? 's' : ''}
-                                        </Badge>
-                                    )}
-                                </Group>
-                                <Text size="xs" c="dimmed">
-                                    Comunicación directa con admin
-                                </Text>
-                            </Stack>
-                            <ThemeIcon size={46} radius="md" variant="light" color="violet">
-                                <IconMessage size={24} />
-                            </ThemeIcon>
-                        </Group>
-                    </Card>
                 </SimpleGrid>
 
                 {/* Contenido Principal con Pestañas */}
@@ -518,9 +444,6 @@ export default function LocatarioDashboard({
                         </Tabs.Tab>
                         <Tabs.Tab value="reservaciones" leftSection={<IconCalendarClock size={16} />}>
                             Reservaciones ({reservaciones.length})
-                        </Tabs.Tab>
-                        <Tabs.Tab value="avisos" leftSection={<IconBell size={16} />}>
-                            Avisos ({avisos.length})
                         </Tabs.Tab>
                     </Tabs.List>
 
@@ -633,34 +556,6 @@ export default function LocatarioDashboard({
                                 )}
                             </Card>
                         </SimpleGrid>
-
-                        {/* Banner de comunicación rápida */}
-                        <Card withBorder radius="lg" p="lg" shadow="sm" mt="lg" bg="var(--mantine-color-violet-light)">
-                            <Group justify="space-between" align="center" wrap="wrap">
-                                <Group gap="md">
-                                    <ThemeIcon size={48} radius="xl" color="violet">
-                                        <IconMessageCircle size={28} />
-                                    </ThemeIcon>
-                                    <Stack gap={2}>
-                                        <Title order={4} fw={600}>
-                                            ¿Tienes dudas con tu contrato o pagos?
-                                        </Title>
-                                        <Text size="sm" c="dimmed">
-                                            Comunícate en tiempo real con la administración del condominio mediante la mensajería interna.
-                                        </Text>
-                                    </Stack>
-                                </Group>
-                                <Button
-                                    component={Link}
-                                    href="/mensajes"
-                                    color="violet"
-                                    variant="filled"
-                                    rightSection={<IconArrowRight size={16} />}
-                                >
-                                    Abrir Mensajería
-                                </Button>
-                            </Group>
-                        </Card>
                     </Tabs.Panel>
 
                     {/* PESTAÑA 2: CUOTAS Y PAGOS */}
@@ -915,87 +810,6 @@ export default function LocatarioDashboard({
                                         </Button>
                                     </Stack>
                                 </Card>
-                            )}
-                        </Stack>
-                    </Tabs.Panel>
-
-                    {/* PESTAÑA 5: AVISOS */}
-                    <Tabs.Panel value="avisos">
-                        <Stack gap="md">
-                            <Group justify="space-between" align="center">
-                                <Stack gap={2}>
-                                    <Title order={4} fw={600}>Avisos y Comunicados del Condominio</Title>
-                                    <Text size="sm" c="dimmed">Mantente al tanto de comunicados oficiales, cortes programados y eventos</Text>
-                                </Stack>
-                                <Button
-                                    component={Link}
-                                    href="/avisos"
-                                    variant="subtle"
-                                    rightSection={<IconArrowRight size={16} />}
-                                >
-                                    Ver todos los avisos
-                                </Button>
-                            </Group>
-
-                            {avisos.length > 0 ? (
-                                <Stack gap="sm">
-                                    {avisos.map((aviso) => (
-                                        <Card key={aviso.id} withBorder radius="lg" padding="md" shadow="xs">
-                                            <Group justify="space-between" align="flex-start" mb="xs">
-                                                <Group gap="xs">
-                                                    <ThemeIcon
-                                                        radius="md"
-                                                        variant="light"
-                                                        color={
-                                                            aviso.tipo === 'urgente'
-                                                                ? 'red'
-                                                                : aviso.tipo === 'mantenimiento'
-                                                                ? 'orange'
-                                                                : 'blue'
-                                                        }
-                                                    >
-                                                        <IconBell size={18} />
-                                                    </ThemeIcon>
-                                                    <div>
-                                                        <Group gap={6} align="center">
-                                                            <Title order={5} fw={600}>
-                                                                {aviso.titulo}
-                                                            </Title>
-                                                            {aviso.fijado && (
-                                                                <Badge size="xs" color="yellow" variant="filled">
-                                                                    Fijado
-                                                                </Badge>
-                                                            )}
-                                                        </Group>
-                                                        <Text size="xs" c="dimmed">
-                                                            Publicado el {aviso.fechaPublicacion}
-                                                            {aviso.fechaEvento ? ` · Evento programado: ${aviso.fechaEvento}` : ''}
-                                                        </Text>
-                                                    </div>
-                                                </Group>
-                                                <Badge
-                                                    variant="light"
-                                                    color={
-                                                        aviso.tipo === 'urgente'
-                                                            ? 'red'
-                                                            : aviso.tipo === 'mantenimiento'
-                                                            ? 'orange'
-                                                            : 'blue'
-                                                    }
-                                                >
-                                                    {aviso.tipo.toUpperCase()}
-                                                </Badge>
-                                            </Group>
-                                            <Text size="sm" style={{ whiteSpace: 'pre-line' }}>
-                                                {aviso.contenido}
-                                            </Text>
-                                        </Card>
-                                    ))}
-                                </Stack>
-                            ) : (
-                                <Alert icon={<IconInfoCircle size={16} />} title="Sin avisos recientes" color="blue">
-                                    No hay avisos pendientes para mostrar en este momento.
-                                </Alert>
                             )}
                         </Stack>
                     </Tabs.Panel>
