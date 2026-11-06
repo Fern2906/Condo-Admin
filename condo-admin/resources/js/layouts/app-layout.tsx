@@ -1,9 +1,13 @@
+import { usePage } from '@inertiajs/react';
 import Navbar from '@/matine-components/navbar';
 import { Footer } from '@/matine-components/footer';
 
 export default function AppLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+    const { auth } = usePage().props;
+    const isLocatario = auth.user?.rol?.nombre === 'locatario';
+
     const links = [
-        { link: '/dashboard', label: 'Dashboard' },
+        { link: isLocatario ? '/locatario/dashboard' : '/dashboard', label: 'Dashboard' },
         { link: '/avisos', label: 'Avisos' },
         { link: '/mensajes', label: 'Mensajes' },
     ];

@@ -4,6 +4,7 @@ use App\Http\Controllers\AreaComunController;
 use App\Http\Controllers\AvisoController;
 use App\Http\Controllers\ContratoController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\LocatarioDashboardController;
 use App\Http\Controllers\LocalController;
 use App\Http\Controllers\MensajeController;
 use App\Http\Controllers\PagosController;
@@ -18,6 +19,7 @@ Route::inertia('/', 'welcome')->name('home');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', DashboardController::class)->name('dashboard');
+    Route::get('locatario/dashboard', LocatarioDashboardController::class)->name('locatarios.dashboard');
 
     Route::delete('locales', [LocalController::class, 'destroyMany'])->name('locales.destroy-many');
     Route::patch('locales/estado', [LocalController::class, 'updateStatus'])->name('locales.update-status');

@@ -16,6 +16,17 @@ class ReservacionRequest extends FormRequest
 {
     use SpanishValidationMessages;
 
+    protected function prepareForValidation(): void
+    {
+        if (! $this->has('usuarioId') && $this->user()) {
+            $this->merge(['usuarioId' => $this->user()->id]);
+        }
+
+        if (! $this->has('estado')) {
+            $this->merge(['estado' => 'pendiente']);
+        }
+    }
+
     /**
      * @return array<string, ValidationRule|array<mixed>|string>
      */

@@ -14,6 +14,17 @@ class PagoRequest extends FormRequest
         messages as spanishMessages;
     }
 
+    protected function prepareForValidation(): void
+    {
+        if (! $this->has('residenteId') && $this->user()) {
+            $this->merge(['residenteId' => $this->user()->id]);
+        }
+
+        if (! $this->has('estado')) {
+            $this->merge(['estado' => 'pendiente']);
+        }
+    }
+
     /**
      * @return array<string, ValidationRule|array<mixed>|string>
      */

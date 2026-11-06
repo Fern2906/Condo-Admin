@@ -76,6 +76,21 @@ class User extends Authenticatable implements MustVerifyEmail, PasskeyUser
         return $this->belongsTo(Rol::class, 'rol_id');
     }
 
+    public function esAdministrador(): bool
+    {
+        return $this->rol?->nombre === Rol::ADMINISTRADOR;
+    }
+
+    public function esLocatario(): bool
+    {
+        return $this->rol?->nombre === Rol::LOCATARIO;
+    }
+
+    public function esPropietario(): bool
+    {
+        return $this->rol?->nombre === Rol::PROPIETARIO;
+    }
+
     /**
      * Estas tablas apuntan a users con restrictOnDelete, así que un usuario
      * con registros en ellas no se puede borrar (se debe bloquear).

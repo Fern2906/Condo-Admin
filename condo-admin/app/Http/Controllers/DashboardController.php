@@ -9,16 +9,23 @@ use App\Models\Pago;
 use App\Models\Reservacion;
 use App\Models\ResidenteLocal;
 use App\Models\Solicitud;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
 class DashboardController extends Controller
 {
     /**
-     * Mostrar el panel de administración con el resumen del condominio.
+     * Mostrar el panel de administración o redirigir al dashboard de locatario si no es admin.
      */
-    public function __invoke(): Response
+    public function __invoke(Request $request): Response|RedirectResponse
     {
+        $user = $request->user();
+
+        if (! $user || ! $user->esAdministrador()) {
+            return redirect()->route('locatarios.dashboard');
+        }
         $reservacionesHoy = Reservacion::query()
             ->whereDate('fecha', today())
             ->whereIn('estado', ['pendiente']);
