@@ -20,7 +20,25 @@ export interface PagoData {
     motivoRechazo: string | null;
     notas: string | null;
     reciboFolio?: string | null;
+    cargosAplicados: CargoAplicado[];
     createdAt?: string | null;
+}
+
+export interface CargoAplicado {
+    id: number;
+    concepto: string;
+    periodo: string;
+    montoAplicado: number;
+}
+
+export interface CargoOption {
+    id: number;
+    localId: number;
+    concepto: string;
+    periodo: string;
+    monto: number;
+    disponible: number;
+    fechaVencimiento: string;
 }
 
 export interface LocalOption {
@@ -50,5 +68,6 @@ export interface PagoForm {
     notas: string;
     comprobanteUrl: string;
     motivoRechazo: string;
+    cargoIds: string[];
 }
 

@@ -35,6 +35,7 @@ import {
     IconReport,
 } from '@tabler/icons-react';
 import { toast } from 'sonner';
+import dayjs from 'dayjs';
 import { TittlePage } from '@/matine-components/tittle-page';
 
 interface LocalInfo {
@@ -80,6 +81,7 @@ interface CargoItem {
     concepto: string;
     periodo: string | null;
     monto: number;
+    saldo: number;
     fechaVencimiento: string | null;
     cuotaNombre: string | null;
 }
@@ -184,7 +186,7 @@ export default function LocatarioDashboard({
     const [pagoForm, setPagoForm] = useState({
         localId: local?.id ? String(local.id) : (catalogos.locales[0]?.value ?? ''),
         monto: local?.cuotaMantenimiento ?? 500,
-        fechaPago: new Date().toISOString().split('T')[0],
+        fechaPago: dayjs().format('YYYY-MM-DD'),
         notas: '',
         comprobanteUrl: '',
     });
@@ -280,23 +282,21 @@ export default function LocatarioDashboard({
 
         setIsSubmittingPago(true);
         router.post(
-            '/pagos',
+            '/locatario/pagos',
             {
                 localId: Number(pagoForm.localId),
                 monto: Number(pagoForm.monto),
                 fechaPago: pagoForm.fechaPago,
                 notas: pagoForm.notas || null,
                 comprobanteUrl: pagoForm.comprobanteUrl || null,
-                estado: 'pendiente',
             },
             {
                 onSuccess: () => {
-                    toast.success('Pago reportado para validación de administración');
                     closePago();
                     setPagoForm({
                         localId: local?.id ? String(local.id) : (catalogos.locales[0]?.value ?? ''),
                         monto: local?.cuotaMantenimiento ?? 500,
-                        fechaPago: new Date().toISOString().split('T')[0],
+                        fechaPago: dayjs().format('YYYY-MM-DD'),
                         notas: '',
                         comprobanteUrl: '',
                     });
@@ -588,7 +588,7 @@ export default function LocatarioDashboard({
                                                 <Table.Th>Concepto</Table.Th>
                                                 <Table.Th>Periodo</Table.Th>
                                                 <Table.Th>Vencimiento</Table.Th>
-                                                <Table.Th style={{ textAlign: 'right' }}>Monto</Table.Th>
+                                                <Table.Th style={{ textAlign: 'right' }}>Saldo</Table.Th>
                                             </Table.Tr>
                                         </Table.Thead>
                                         <Table.Tbody>
@@ -598,7 +598,12 @@ export default function LocatarioDashboard({
                                                     <Table.Td>{cargo.periodo || '-'}</Table.Td>
                                                     <Table.Td>{cargo.fechaVencimiento || '-'}</Table.Td>
                                                     <Table.Td style={{ textAlign: 'right' }} fw={600} c="red.7">
-                                                        ${cargo.monto.toFixed(2)}
+                                                        ${cargo.saldo.toFixed(2)}
+                                                        {cargo.saldo < cargo.monto && (
+                                                            <Text size="xs" c="dimmed" fw={400}>
+                                                                de ${cargo.monto.toFixed(2)}
+                                                            </Text>
+                                                        )}
                                                     </Table.Td>
                                                 </Table.Tr>
                                             ))}

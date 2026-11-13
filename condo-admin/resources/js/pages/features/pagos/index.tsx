@@ -9,6 +9,7 @@ import {
     Grid,
     Group,
     Menu,
+    MultiSelect,
     NumberInput,
     Select,
     SimpleGrid,
@@ -48,7 +49,7 @@ import { BulkActions } from '@/layouts/sections/bulk-actions';
 import { FormModal } from '@/layouts/sections/form-modal';
 import { DetailCard, DetailDrawer, DetailSection, DetailStatus } from '@/layouts/sections/detail-drawer';
 
-import type { CuotaOption, EstadoPago, LocalOption, PagoData, ResidenteOption } from '@/types/pagos.types';
+import type { CargoOption, CuotaOption, EstadoPago, LocalOption, PagoData, ResidenteOption } from '@/types/pagos.types';
 import {
     ESTADOS_PAGO_COLOR,
     ESTADOS_PAGO_OPTIONS,
@@ -63,9 +64,10 @@ interface PagosPageProps {
     locales: LocalOption[];
     residentes: ResidenteOption[];
     cuotas: CuotaOption[];
+    cargos: CargoOption[];
 }
 
-export default function PagosPage({ pagos, locales, residentes, cuotas }: PagosPageProps) {
+export default function PagosPage({ pagos, locales, residentes, cargos }: PagosPageProps) {
     const filters = usePagosFilters(pagos);
     const actions = usePagosActions(pagos);
 
@@ -78,6 +80,33 @@ export default function PagosPage({ pagos, locales, residentes, cuotas }: PagosP
         () => residentes.map((r) => ({ value: String(r.id), label: `${r.name} (${r.email})` })),
         [residentes]
     );
+
+    // Cargos del local elegido que aún tienen algo por cubrir. Al editar, lo que
+    // el propio pago ya cubre vuelve a contar como disponible.
+    const { localId: formLocalId, cargoIds: formCargoIds } = actions.form.data;
+    const cargosDisponibles = useMemo(() => {
+        const aplicadoPorEditado = new Map(
+            (actions.editingPago?.cargosAplicados ?? []).map((c) => [c.id, c.montoAplicado])
+        );
+
+        return cargos
+            .filter((c) => String(c.localId) === String(formLocalId))
+            .map((c) => ({ ...c, disponible: c.disponible + (aplicadoPorEditado.get(c.id) ?? 0) }))
+            .filter((c) => c.disponible > 0 || aplicadoPorEditado.has(c.id));
+    }, [cargos, formLocalId, actions.editingPago]);
+
+    const cargosOptions = cargosDisponibles.map((c) => ({
+        value: String(c.id),
+        label: `${c.periodo} · ${c.concepto} — por cubrir ${formatMoney(c.disponible)}`,
+    }));
+
+    const totalCargosSeleccionados = cargosDisponibles
+        .filter((c) => formCargoIds.includes(String(c.id)))
+        .reduce((sum, c) => sum + c.disponible, 0);
+
+    // Un pago validado ya tiene recibo: local, monto y cargos no cambian mientras siga validado.
+    const bloqueadoPorRecibo = actions.editingPago?.estado === 'validado' && actions.form.data.estado === 'validado';
+    const avisoBloqueo = bloqueadoPorRecibo ? 'Tiene recibo emitido. Cambia el estado a pendiente para corregirlo.' : undefined;
 
     const columns: Column<PagoData>[] = [
         {
@@ -345,7 +374,11 @@ export default function PagosPage({ pagos, locales, residentes, cuotas }: PagosP
                                     data={localesOptions}
                                     value={actions.form.data.localId ? String(actions.form.data.localId) : null}
                                     error={actions.form.errors.localId}
-                                    onChange={(val) => actions.form.setData('localId', val ? Number(val) : '')}
+                                    disabled={bloqueadoPorRecibo}
+                                    description={avisoBloqueo}
+                                    onChange={(val) =>
+                                        actions.form.setData((data) => ({ ...data, localId: val ? Number(val) : '', cargoIds: [] }))
+                                    }
                                 />
                             </Grid.Col>
 
@@ -372,6 +405,7 @@ export default function PagosPage({ pagos, locales, residentes, cuotas }: PagosP
                                     thousandSeparator=","
                                     value={actions.form.data.monto}
                                     error={actions.form.errors.monto}
+                                    disabled={bloqueadoPorRecibo}
                                     onChange={(val) => actions.form.setData('monto', val)}
                                 />
                             </Grid.Col>
@@ -395,6 +429,32 @@ export default function PagosPage({ pagos, locales, residentes, cuotas }: PagosP
                                     value={actions.form.data.estado}
                                     error={actions.form.errors.estado}
                                     onChange={(val) => actions.form.setData('estado', (val as EstadoPago) || 'pendiente')}
+                                />
+                            </Grid.Col>
+
+                            <Grid.Col span={12}>
+                                <MultiSelect
+                                    label="Cargos que cubre"
+                                    placeholder={
+                                        !actions.form.data.localId
+                                            ? 'Selecciona primero el local'
+                                            : cargosOptions.length === 0
+                                              ? 'El local no tiene cargos por cubrir'
+                                              : 'Selecciona los cargos'
+                                    }
+                                    description={
+                                        avisoBloqueo ??
+                                        (formCargoIds.length > 0
+                                            ? `Se aplica en orden de vencimiento. Por cubrir en lo seleccionado: ${formatMoney(totalCargosSeleccionados)}`
+                                            : 'Opcional. Al validarse, el pago descuenta estos cargos del adeudo del local.')
+                                    }
+                                    clearable
+                                    searchable
+                                    data={cargosOptions}
+                                    value={formCargoIds}
+                                    disabled={bloqueadoPorRecibo || !actions.form.data.localId}
+                                    error={actions.form.errors.cargoIds}
+                                    onChange={(val) => actions.form.setData('cargoIds', val)}
                                 />
                             </Grid.Col>
 
@@ -536,6 +596,18 @@ export default function PagosPage({ pagos, locales, residentes, cuotas }: PagosP
                                     ]}
                                 />
                             </DetailSection>
+
+                            {actions.selectedPago.cargosAplicados.length > 0 && (
+                                <DetailSection title="Cargos que cubre">
+                                    <DetailCard
+                                        items={actions.selectedPago.cargosAplicados.map((c) => ({
+                                            icon: IconReceipt,
+                                            label: `${c.periodo} · ${c.concepto}`,
+                                            value: formatMoney(c.montoAplicado),
+                                        }))}
+                                    />
+                                </DetailSection>
+                            )}
 
                             {actions.selectedPago.comprobanteUrl && (
                                 <DetailSection title="Comprobante">

@@ -1,3 +1,4 @@
+import dayjs from 'dayjs';
 import type { EstadoPago, PagoData, PagoForm } from '@/types/pagos.types';
 
 export const ESTADOS_PAGO_OPTIONS: { value: EstadoPago; label: string }[] = [
@@ -12,16 +13,18 @@ export const ESTADOS_PAGO_COLOR: Record<EstadoPago, string> = {
     rechazado: 'red',
 };
 
-export const EMPTY_PAGO_FORM: PagoForm = {
+// Función y no constante: la fecha de hoy (local, no UTC) se calcula al abrir el formulario.
+export const emptyPagoForm = (): PagoForm => ({
     localId: '',
     residenteId: '',
     monto: '',
-    fechaPago: new Date().toISOString().slice(0, 10),
+    fechaPago: dayjs().format('YYYY-MM-DD'),
     estado: 'pendiente',
     notas: '',
     comprobanteUrl: '',
     motivoRechazo: '',
-};
+    cargoIds: [],
+});
 
 export const toPagoForm = (pago: PagoData): PagoForm => ({
     localId: pago.localId,
@@ -32,6 +35,7 @@ export const toPagoForm = (pago: PagoData): PagoForm => ({
     notas: pago.notas ?? '',
     comprobanteUrl: pago.comprobanteUrl ?? '',
     motivoRechazo: pago.motivoRechazo ?? '',
+    cargoIds: pago.cargosAplicados.map((c) => String(c.id)),
 });
 
 export const formatMoney = (amount: number | string | null | undefined): string => {

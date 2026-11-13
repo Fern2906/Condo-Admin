@@ -98,22 +98,26 @@ class LocatarioDashboardController extends Controller
                 'estado' => $p->estado,
                 'comprobanteUrl' => $p->comprobante_url,
                 'motivoRechazo' => $p->motivo_rechazo,
-                'reciboFolio' => $p->recibo?->folio,
+                'reciboFolio' => $p->folioVigente(),
                 'notas' => $p->notas,
             ]);
 
-        // Cargos pendientes
+        // Cargos con saldo: lo que falta después de los pagos validados
         $cargos = Cargo::with('cuota')
+            ->conAplicado()
             ->whereIn('local_id', $localIds)
             ->where('cancelado', false)
             ->orderBy('fecha_vencimiento')
             ->get()
-            ->map(fn ($c) => [
+            ->filter(fn (Cargo $c) => $c->saldoPendiente() > 0)
+            ->values()
+            ->map(fn (Cargo $c) => [
                 'id' => $c->id,
                 'concepto' => $c->concepto,
                 'periodo' => $c->periodo,
                 'monto' => (float) $c->monto,
-                'fechaVencimiento' => $c->fecha_vencimiento?->format('Y-m-d'),
+                'saldo' => $c->saldoPendiente(),
+                'fechaVencimiento' => $c->fecha_vencimiento->format('Y-m-d'),
                 'cuotaNombre' => $c->cuota?->nombre,
             ]);
 
@@ -185,7 +189,7 @@ class LocatarioDashboardController extends Controller
             ->get(['id', 'nombre', 'capacidad', 'hora_apertura', 'hora_cierre'])
             ->map(fn ($a) => [
                 'value' => (string) $a->id,
-                'label' => $a->nombre . ($a->capacidad ? " (Capacidad: {$a->capacidad})" : ''),
+                'label' => $a->nombre.($a->capacidad ? " (Capacidad: {$a->capacidad})" : ''),
                 'horaApertura' => $a->hora_apertura ? substr($a->hora_apertura, 0, 5) : null,
                 'horaCierre' => $a->hora_cierre ? substr($a->hora_cierre, 0, 5) : null,
             ]);
@@ -200,7 +204,7 @@ class LocatarioDashboardController extends Controller
             'contrato' => $contratoData,
             'pagos' => $pagos,
             'cargos' => $cargos,
-            'totalAdeudo' => (float) $cargos->sum('monto'),
+            'totalAdeudo' => round((float) $cargos->sum('saldo'), 2),
             'incidencias' => $incidencias,
             'reservaciones' => $reservaciones,
             'avisos' => $avisos,
@@ -213,4 +217,3 @@ class LocatarioDashboardController extends Controller
         ]);
     }
 }
-

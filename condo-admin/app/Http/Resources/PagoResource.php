@@ -35,9 +35,14 @@ class PagoResource extends JsonResource
             'fechaValidacion' => $this->fecha_validacion?->toDateTimeString(),
             'motivoRechazo' => $this->motivo_rechazo,
             'notas' => $this->notas,
-            'reciboFolio' => $this->recibo?->folio,
+            'reciboFolio' => $this->folioVigente(),
+            'cargosAplicados' => $this->cargos->map(fn ($cargo) => [
+                'id' => $cargo->id,
+                'concepto' => $cargo->concepto,
+                'periodo' => $cargo->periodo,
+                'montoAplicado' => (float) $cargo->pivot->getAttribute('monto_aplicado'),
+            ])->values()->all(),
             'createdAt' => $this->created_at?->toDateTimeString(),
         ];
     }
 }
-

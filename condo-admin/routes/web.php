@@ -2,17 +2,18 @@
 
 use App\Http\Controllers\AreaComunController;
 use App\Http\Controllers\AvisoController;
+use App\Http\Controllers\CategoriaIncidenciaController;
 use App\Http\Controllers\ContratoController;
 use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\LocatarioDashboardController;
+use App\Http\Controllers\IncidenciasController;
 use App\Http\Controllers\LocalController;
+use App\Http\Controllers\LocatarioDashboardController;
+use App\Http\Controllers\LocatarioPagoController;
 use App\Http\Controllers\MensajeController;
 use App\Http\Controllers\PagosController;
 use App\Http\Controllers\ReportesController;
 use App\Http\Controllers\ReservacionController;
 use App\Http\Controllers\UserController;
-use App\Http\Controllers\IncidenciasController;
-use App\Http\Controllers\CategoriaIncidenciaController;
 use Illuminate\Support\Facades\Route;
 
 Route::inertia('/', 'welcome')->name('home');
@@ -42,7 +43,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->only(['store', 'update', 'destroy'])
         ->parameters(['areas-comunes' => 'area_comun']);
 
-    /// Incidencias
+    // / Incidencias
     Route::delete('incidencias', [IncidenciasController::class, 'destroyMany'])->name('incidencias.destroy-many');
     Route::patch('incidencias/estado', [IncidenciasController::class, 'updateStatus'])->name('incidencias.update-status');
     Route::resource('incidencias', IncidenciasController::class)
@@ -53,7 +54,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::patch('categorias-incidencia/estado', [CategoriaIncidenciaController::class, 'updateStatus'])->name('categorias-incidencia.update-status');
     Route::resource('categorias-incidencia', CategoriaIncidenciaController::class)
         ->only(['index', 'store', 'update', 'destroy'])
-    ->parameters(['categorias-incidencia' => 'categoria']);
+        ->parameters(['categorias-incidencia' => 'categoria']);
 
     // Avisos
     Route::delete('avisos', [AvisoController::class, 'destroyMany'])->name('avisos.destroy-many');
@@ -66,11 +67,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('contratos', ContratoController::class)
         ->only(['index', 'store', 'update', 'destroy']);
 
-    // Cuotas y Pagos
-    Route::delete('pagos', [PagosController::class, 'destroyMany'])->name('pagos.destroy-many');
-    Route::patch('pagos/estado', [PagosController::class, 'updateStatus'])->name('pagos.update-status');
-    Route::resource('pagos', PagosController::class)
-        ->only(['index', 'store', 'update', 'destroy']);
+    // Cuotas y Pagos (administración)
+    Route::middleware('admin')->group(function () {
+        Route::delete('pagos', [PagosController::class, 'destroyMany'])->name('pagos.destroy-many');
+        Route::patch('pagos/estado', [PagosController::class, 'updateStatus'])->name('pagos.update-status');
+        Route::resource('pagos', PagosController::class)
+            ->only(['index', 'store', 'update', 'destroy']);
+    });
+
+    // El locatario reporta un pago de sus propios locales para que se valide.
+    Route::post('locatario/pagos', [LocatarioPagoController::class, 'store'])->name('locatarios.pagos.store');
 
     // Reportes y Estadísticas
     Route::get('reportes', [ReportesController::class, 'index'])->name('reportes.index');

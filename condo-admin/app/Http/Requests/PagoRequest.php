@@ -16,10 +16,6 @@ class PagoRequest extends FormRequest
 
     protected function prepareForValidation(): void
     {
-        if (! $this->has('residenteId') && $this->user()) {
-            $this->merge(['residenteId' => $this->user()->id]);
-        }
-
         if (! $this->has('estado')) {
             $this->merge(['estado' => 'pendiente']);
         }
@@ -33,12 +29,20 @@ class PagoRequest extends FormRequest
         return [
             'localId' => ['required', 'integer', 'exists:locales,id'],
             'residenteId' => ['nullable', 'integer', 'exists:users,id'],
-            'monto' => ['required', 'numeric', 'min:0.01'],
+            'monto' => ['required', 'numeric', 'min:0.01', 'max:99999999.99'],
             'fechaPago' => ['required', 'date'],
             'estado' => ['nullable', Rule::in(Pago::ESTADOS)],
             'notas' => ['nullable', 'string', 'max:255'],
             'comprobanteUrl' => ['nullable', 'string', 'max:255'],
             'motivoRechazo' => ['nullable', 'string', 'max:255'],
+            'cargoIds' => ['nullable', 'array'],
+            'cargoIds.*' => [
+                'integer',
+                'distinct',
+                Rule::exists('cargos', 'id')
+                    ->where('local_id', $this->integer('localId'))
+                    ->where('cancelado', false),
+            ],
         ];
     }
 
@@ -56,6 +60,8 @@ class PagoRequest extends FormRequest
             'notas' => 'notas',
             'comprobanteUrl' => 'comprobante',
             'motivoRechazo' => 'motivo de rechazo',
+            'cargoIds' => 'cargos',
+            'cargoIds.*' => 'cargo',
         ];
     }
 
@@ -75,5 +81,14 @@ class PagoRequest extends FormRequest
             'motivo_rechazo' => $this->validated('motivoRechazo'),
         ];
     }
-}
 
+    /**
+     * Cargos del local que cubre el pago.
+     *
+     * @return list<int>
+     */
+    public function cargoIds(): array
+    {
+        return array_values(array_map('intval', $this->validated('cargoIds') ?? []));
+    }
+}

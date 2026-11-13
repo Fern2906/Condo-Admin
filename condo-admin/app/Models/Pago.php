@@ -87,4 +87,12 @@ class Pago extends Model
     {
         return $this->hasOne(Recibo::class, 'pago_id');
     }
+
+    /**
+     * Folio del recibo, solo mientras no esté cancelado.
+     */
+    public function folioVigente(): ?string
+    {
+        return $this->recibo && ! $this->recibo->cancelado ? $this->recibo->folio : null;
+    }
 }

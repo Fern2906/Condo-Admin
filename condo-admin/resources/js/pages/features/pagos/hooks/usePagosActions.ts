@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { useDisclosure } from '@mantine/hooks';
 import { router, useForm } from '@inertiajs/react';
-import type { EstadoPago, PagoData, PagoForm } from '@/types/pagos.types';
-import { EMPTY_PAGO_FORM, toPagoForm } from '../constants/pagos.constants';
+import type { PagoData, PagoForm } from '@/types/pagos.types';
+import { emptyPagoForm, toPagoForm } from '../constants/pagos.constants';
 
 export const usePagosActions = (pagos: PagoData[]) => {
     const [selection, setSelection] = useState<number[]>([]);
@@ -12,13 +12,14 @@ export const usePagosActions = (pagos: PagoData[]) => {
     const [formOpened, { open: openForm, close: closeForm }] = useDisclosure(false);
     const [detailOpened, { open: openDetail, close: closeDetail }] = useDisclosure(false);
 
-    const form = useForm<PagoForm>(EMPTY_PAGO_FORM);
+    const form = useForm<PagoForm>(emptyPagoForm());
     const selectedPago = pagos.find((p) => p.id === selectedId) ?? null;
+    const editingPago = pagos.find((p) => p.id === editingId) ?? null;
 
     const handleOpenCreate = () => {
         setEditingId(null);
         form.clearErrors();
-        form.setData(EMPTY_PAGO_FORM);
+        form.setData(emptyPagoForm());
         openForm();
     };
 
@@ -40,6 +41,7 @@ export const usePagosActions = (pagos: PagoData[]) => {
             localId: Number(data.localId),
             residenteId: data.residenteId ? Number(data.residenteId) : null,
             monto: Number(data.monto),
+            cargoIds: data.cargoIds.map(Number),
         } as never));
 
         if (editingId === null) {
@@ -69,7 +71,8 @@ export const usePagosActions = (pagos: PagoData[]) => {
     };
 
     const handleReject = (pago: PagoData) => {
-        const motivo = window.prompt('Ingrese el motivo de rechazo del pago:') ?? '';
+        const motivo = window.prompt('Ingrese el motivo de rechazo del pago:');
+        if (motivo === null) return;
         router.patch(
             '/pagos/estado',
             { ids: [pago.id], estado: 'rechazado', motivoRechazo: motivo },
@@ -115,6 +118,7 @@ export const usePagosActions = (pagos: PagoData[]) => {
         detailOpened,
         closeDetail,
         editingId,
+        editingPago,
         selectedPago,
         form,
         handleOpenCreate,
