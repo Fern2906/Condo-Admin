@@ -283,12 +283,6 @@ export default function ContratosPage({ contratos, locales, residentes }: Contra
                     itemName="contratos"
                     actions={[
                         {
-                            label: 'Eliminar',
-                            icon: IconTrash,
-                            color: 'red',
-                            onClick: actions.handleDeleteSelected,
-                        },
-                        {
                             label: 'Editar',
                             icon: IconPencil,
                             color: 'yellow',
@@ -297,6 +291,12 @@ export default function ContratosPage({ contratos, locales, residentes }: Contra
                                 const selected = contratos.find((c) => c.id === actions.selection[0]);
                                 if (selected) actions.handleOpenEdit(selected);
                             },
+                        },
+                        {
+                            label: 'Eliminar',
+                            icon: IconTrash,
+                            color: 'red',
+                            onClick: actions.handleDeleteSelected,
                         },
                     ]}
                 />

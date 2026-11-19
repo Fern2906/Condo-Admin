@@ -2,6 +2,7 @@ import { ActionIcon, Badge, Box, Button, Card, Center, Checkbox, Drawer, Flex, G
 import { Head, router } from '@inertiajs/react';
 import { IconAlertCircle, IconBuilding, IconCalendar, IconCalendarClock, IconCheck, IconClock, IconDotsVertical, IconEye, IconLock, IconPencil, IconPlus, IconTrash, IconUsers, IconX } from '@tabler/icons-react';
 import { TittlePage } from '@/matine-components/tittle-page';
+import { BulkActions } from '@/layouts/sections/bulk-actions';
 import type { AreaComunData, ReservacionData } from '@/types/reservaciones.types';
 import { estadoColor } from './constants/reservaciones.constants';
 import { useReservacionesFilters } from './hooks/useReservacionesFilters';
@@ -194,19 +195,32 @@ export default function ReservacionesPage({
                             </Table.ScrollContainer>
                         </Card>
 
-                        {actions.selection.length > 0 && (
-                            <Card withBorder radius="md" padding="sm" bg="var(--mantine-color-blue-0)">
-                                <Group gap="sm" justify="space-between" wrap="wrap">
-                                    <Text size="sm" fw={500}>{actions.selection.length} reservaciones seleccionadas</Text>
-                                    <Group gap="sm">
-                                        <Button size="xs" color="green" leftSection={<IconCheck size={14} />} onClick={actions.handleApproveSelected}>Aprobar</Button>
-                                        <Button size="xs" color="red" leftSection={<IconX size={14} />} onClick={actions.handleRejectSelected}>Rechazar</Button>
-                                        <Button size="xs" color="red" variant="outline" leftSection={<IconTrash size={14} />} onClick={actions.handleDeleteManyRes}>Eliminar</Button>
-                                        <Button size="xs" variant="subtle" onClick={() => actions.setSelection([])}>Cancelar</Button>
-                                    </Group>
-                                </Group>
-                            </Card>
-                        )}
+                        {/* Acciones masivas */}
+                        <BulkActions
+                            count={actions.selection.length}
+                            onClear={() => actions.setSelection([])}
+                            itemName="reservaciones"
+                            actions={[
+                                {
+                                    label: 'Aprobar',
+                                    icon: IconCheck,
+                                    color: 'green',
+                                    onClick: actions.handleApproveSelected,
+                                },
+                                {
+                                    label: 'Rechazar',
+                                    icon: IconX,
+                                    color: 'orange',
+                                    onClick: actions.handleRejectSelected,
+                                },
+                                {
+                                    label: 'Eliminar',
+                                    icon: IconTrash,
+                                    color: 'red',
+                                    onClick: actions.handleDeleteManyRes,
+                                },
+                            ]}
+                        />
                     </Stack>
                 )}
 
