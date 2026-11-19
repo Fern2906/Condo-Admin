@@ -1,7 +1,7 @@
 import { Badge, Button, Card, Grid, Group, Paper, Select, Stack, Switch, Text, TextInput, Textarea } from '@mantine/core';
 import { DateTimePicker } from '@mantine/dates';
 import { Head } from '@inertiajs/react';
-import { IconBell, IconCalendar, IconEye, IconPencil, IconPin, IconPlus, IconTrash, IconUser } from '@tabler/icons-react';
+import { IconBell, IconCalendar, IconCheck, IconEye, IconPencil, IconPin, IconPlus, IconTrash, IconUser, IconX } from '@tabler/icons-react';
 
 import { PageLayout } from '@/layouts/sections/page-layout';
 import { FilterBar } from '@/layouts/sections/filter-bar';
@@ -80,7 +80,7 @@ export default function AvisosList({ avisos, isAdmin = true }: Readonly<AvisosLi
                         <Text c="dimmed">No se encontraron avisos con los filtros seleccionados.</Text>
                     </Paper>
                 ) : (
-                    <Grid g="md">
+                    <Grid gutter="md">
                         {filters.filteredAvisos.map((aviso) => {
                             const isSelected = actions.selection.includes(aviso.id);
 
@@ -204,12 +204,16 @@ export default function AvisosList({ avisos, isAdmin = true }: Readonly<AvisosLi
                         actions={[
                             { label: 'Eliminar', icon: IconTrash, color: 'red', onClick: actions.handleDeleteSelected },
                             {
-                                label: 'Activar', color: 'green', onClick: () => actions.handleToggleActive(actions.selection, true),
-                                icon: undefined
+                                label: 'Activar',
+                                icon: IconCheck,
+                                color: 'green',
+                                onClick: () => actions.handleToggleActive(actions.selection, true),
                             },
                             {
-                                label: 'Desactivar', color: 'orange', onClick: () => actions.handleToggleActive(actions.selection, false),
-                                icon: undefined
+                                label: 'Desactivar',
+                                icon: IconX,
+                                color: 'orange',
+                                onClick: () => actions.handleToggleActive(actions.selection, false),
                             },
                             {
                                 label: 'Editar',

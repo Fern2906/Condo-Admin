@@ -3,7 +3,7 @@ import type { Icon } from '@tabler/icons-react';
 
 export interface BulkAction {
     label: string;
-    icon: Icon;
+    icon?: Icon;
     color?: string;
     onClick: () => void;
     disabled?: boolean;
@@ -23,8 +23,8 @@ export function BulkActions({ count, onClear, actions, itemName = 'seleccionados
             <ActionBar.Divider />
             {actions.map(({ label, icon: IconComponent, color = 'blue', onClick, disabled }) => (
                 <Button key={label} variant="filled" color={color} px={{ base: 'xs', sm: 'md' }} disabled={disabled} onClick={onClick}>
-                    <IconComponent size={14} />
-                    <Box visibleFrom="xs" ml={6}>{label}</Box>
+                    {IconComponent && <IconComponent size={14} />}
+                    <Box visibleFrom="xs" ml={IconComponent ? 6 : 0}>{label}</Box>
                 </Button>
             ))}
             <ActionBar.CloseButton />
