@@ -39,7 +39,7 @@ class UserControllerTest extends TestCase
 
     public function test_index_lists_users_with_their_local()
     {
-        $admin = User::factory()->create(['name' => 'Admin']);
+        $admin = User::factory()->admin()->create(['name' => 'Admin']);
         $tenant = User::factory()->create(['name' => 'Zoe Locataria']);
         Local::factory()->ocupado()->create(['codigo' => 'LC-07', 'edificio' => 'Torre B'])->asignarLocatario($tenant);
 
@@ -59,7 +59,7 @@ class UserControllerTest extends TestCase
 
     public function test_store_creates_a_user()
     {
-        $this->actingAs(User::factory()->create());
+        $this->actingAs(User::factory()->admin()->create());
 
         $this->post(route('users.store'), $this->payload())->assertRedirect(route('users.index'));
 
@@ -71,7 +71,7 @@ class UserControllerTest extends TestCase
 
     public function test_store_rejects_a_duplicated_email()
     {
-        $this->actingAs(User::factory()->create(['email' => 'elena@example.com']));
+        $this->actingAs(User::factory()->admin()->create(['email' => 'elena@example.com']));
 
         $this->post(route('users.store'), $this->payload())
             ->assertSessionHasErrors(['email' => 'Ya existe un registro con ese correo.']);
@@ -79,7 +79,7 @@ class UserControllerTest extends TestCase
 
     public function test_update_changes_data_but_never_blocks_the_current_user()
     {
-        $admin = User::factory()->create();
+        $admin = User::factory()->admin()->create();
         $other = User::factory()->create();
 
         $this->actingAs($admin)
@@ -97,7 +97,7 @@ class UserControllerTest extends TestCase
 
     public function test_destroy_deletes_users_without_related_records()
     {
-        $this->actingAs(User::factory()->create());
+        $this->actingAs(User::factory()->admin()->create());
         $user = User::factory()->create();
 
         $this->delete(route('users.destroy', $user))->assertRedirect(route('users.index'));
@@ -107,7 +107,7 @@ class UserControllerTest extends TestCase
 
     public function test_destroy_refuses_the_current_user_and_users_with_related_records()
     {
-        $admin = User::factory()->create();
+        $admin = User::factory()->admin()->create();
         $reporter = User::factory()->create();
         Incidencia::create([
             'titulo' => 'Fuga', 'descripcion' => 'Gotea',
@@ -125,7 +125,7 @@ class UserControllerTest extends TestCase
 
     public function test_destroy_many_skips_the_current_user()
     {
-        $admin = User::factory()->create();
+        $admin = User::factory()->admin()->create();
         [$a, $b] = User::factory()->count(2)->create();
 
         $this->actingAs($admin)
@@ -139,7 +139,7 @@ class UserControllerTest extends TestCase
 
     public function test_update_status_blocks_other_users_only()
     {
-        $admin = User::factory()->create();
+        $admin = User::factory()->admin()->create();
         $other = User::factory()->create();
 
         $this->actingAs($admin)

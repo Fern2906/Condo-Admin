@@ -201,7 +201,7 @@ export default function LocatarioDashboard({
 
         setIsSubmittingIncidencia(true);
         router.post(
-            '/incidencias',
+            '/locatario/incidencias',
             {
                 titulo: incidenciaForm.titulo,
                 descripcion: incidenciaForm.descripcion,
@@ -241,7 +241,7 @@ export default function LocatarioDashboard({
 
         setIsSubmittingReservacion(true);
         router.post(
-            '/reservaciones',
+            '/locatario/reservaciones',
             {
                 areaComunId: Number(reservacionForm.areaComunId),
                 fecha: reservacionForm.fecha,
@@ -249,7 +249,6 @@ export default function LocatarioDashboard({
                 horaFin: reservacionForm.horaFin,
                 numAsistentes: reservacionForm.numAsistentes ? Number(reservacionForm.numAsistentes) : null,
                 motivo: reservacionForm.motivo || null,
-                estado: 'pendiente',
             },
             {
                 onSuccess: () => {

@@ -111,7 +111,7 @@ export default function Dashboard({ stats: data }: { stats: DashboardStats }) {
                     ))}
                 </SimpleGrid>
 
-                <Card withBorder radius="lg" padding={{ base: 'md', md: 'lg' }} shadow="sm">
+                <Card withBorder radius="lg" p={{ base: 'md', md: 'lg' }} shadow="sm">
                     <Group justify="space-between" mb="lg" wrap="wrap">
                         <Stack gap={4}>
                             <Title order={3} fw={600}>
@@ -126,7 +126,7 @@ export default function Dashboard({ stats: data }: { stats: DashboardStats }) {
                         {quickActions.map((action) => (
                             <Card
                                 key={action.title}
-                                component={action.href ? Link : 'div'}
+                                component={Link}
                                 href={action.href}
                                 withBorder
                                 radius="lg"

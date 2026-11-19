@@ -45,7 +45,7 @@ class ContratoControllerTest extends TestCase
     public function test_index_lists_contracts_closest_to_expire_first()
     {
         $this->freezeTime();
-        $this->actingAs(User::factory()->create());
+        $this->actingAs(User::factory()->admin()->create());
 
         $lc01 = Local::factory()->ocupado()->create(['codigo' => 'LC-01', 'nombre' => 'Cafetería']);
         $lc02 = Local::factory()->ocupado()->create(['codigo' => 'LC-02']);
@@ -81,7 +81,7 @@ class ContratoControllerTest extends TestCase
 
     public function test_store_creates_a_contract()
     {
-        $this->actingAs(User::factory()->create());
+        $this->actingAs(User::factory()->admin()->create());
         $local = Local::factory()->create();
         $residente = User::factory()->create();
 
@@ -99,7 +99,7 @@ class ContratoControllerTest extends TestCase
 
     public function test_store_validates_the_form_with_spanish_messages()
     {
-        $this->actingAs(User::factory()->create());
+        $this->actingAs(User::factory()->admin()->create());
         $local = Local::factory()->create();
         $residente = User::factory()->create();
 
@@ -120,7 +120,7 @@ class ContratoControllerTest extends TestCase
 
     public function test_a_local_can_only_have_one_tenant()
     {
-        $this->actingAs(User::factory()->create());
+        $this->actingAs(User::factory()->admin()->create());
         $local = Local::factory()->create();
         $local->asignarLocatario(User::factory()->create());
 
@@ -136,7 +136,7 @@ class ContratoControllerTest extends TestCase
 
     public function test_a_resident_cannot_have_two_contracts_in_the_same_local()
     {
-        $this->actingAs(User::factory()->create());
+        $this->actingAs(User::factory()->admin()->create());
         $local = Local::factory()->create();
         $residente = User::factory()->create();
         $local->asignarLocatario($residente);
@@ -147,7 +147,7 @@ class ContratoControllerTest extends TestCase
 
     public function test_update_changes_the_contract_dates()
     {
-        $this->actingAs(User::factory()->create());
+        $this->actingAs(User::factory()->admin()->create());
         $local = Local::factory()->create();
         $residente = User::factory()->create();
         $local->asignarLocatario($residente, now()->addMonth());
@@ -163,7 +163,7 @@ class ContratoControllerTest extends TestCase
 
     public function test_destroy_deletes_the_contract_but_keeps_the_local_and_resident()
     {
-        $this->actingAs(User::factory()->create());
+        $this->actingAs(User::factory()->admin()->create());
         $local = Local::factory()->create();
         $residente = User::factory()->create();
         $local->asignarLocatario($residente);
@@ -178,7 +178,7 @@ class ContratoControllerTest extends TestCase
 
     public function test_destroy_many_deletes_the_selected_contracts()
     {
-        $this->actingAs(User::factory()->create());
+        $this->actingAs(User::factory()->admin()->create());
         [$primero, $segundo, $otro] = Local::factory()->count(3)->create()
             ->map(function (Local $local) {
                 $local->asignarLocatario(User::factory()->create());

@@ -3,8 +3,11 @@
 namespace App\Http\Requests;
 
 use App\Concerns\SpanishValidationMessages;
+use App\Concerns\ValidatesReservacionHorario;
 use App\Models\Reservacion;
+use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
+use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -14,7 +17,23 @@ use Illuminate\Validation\Rule;
  */
 class ReservacionRequest extends FormRequest
 {
-    use SpanishValidationMessages;
+    use SpanishValidationMessages, ValidatesReservacionHorario;
+
+    /**
+     * @return array<int, Closure(Validator): void>
+     */
+    public function after(): array
+    {
+        $actual = $this->route('reservacion');
+
+        return [
+            fn (Validator $validator) => $this->validarHorario(
+                $validator,
+                $this->string('estado')->value(),
+                $actual instanceof Reservacion ? $actual : null,
+            ),
+        ];
+    }
 
     protected function prepareForValidation(): void
     {

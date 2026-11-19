@@ -26,9 +26,10 @@ class DashboardController extends Controller
         if (! $user || ! $user->esAdministrador()) {
             return redirect()->route('locatarios.dashboard');
         }
+        // Reservaciones de hoy que ocupan un área (pendientes y aprobadas).
         $reservacionesHoy = Reservacion::query()
             ->whereDate('fecha', today())
-            ->whereIn('estado', ['pendiente']);
+            ->whereIn('estado', Reservacion::ESTADOS_ACTIVOS);
 
         $contratosPorVencer = ResidenteLocal::query()
             ->whereNotNull('fecha_fin')
@@ -48,7 +49,7 @@ class DashboardController extends Controller
                 'incidenciasAbiertas' => Incidencia::abiertas()->count(),
                 'incidenciasSinAtender' => Incidencia::where('estado', 'abierta')->count(),
                 'reservacionesHoy' => (clone $reservacionesHoy)->count(),
-                'reservacionesHoyAprobadas' => (clone $reservacionesHoy)->where('estado', 'pendiente')->count(),
+                'reservacionesHoyAprobadas' => (clone $reservacionesHoy)->where('estado', 'aprobada')->count(),
                 'avisosVigentes' => Aviso::vigentes()->count(),
                 'solicitudesPendientes' => Solicitud::where('estado', 'pendiente')->count(),
                 'contratosTotal' => ResidenteLocal::count(),

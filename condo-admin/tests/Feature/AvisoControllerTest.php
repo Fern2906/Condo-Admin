@@ -53,7 +53,7 @@ class AvisoControllerTest extends TestCase
 
     public function test_index_lists_pinned_avisos_first_with_their_status()
     {
-        $admin = User::factory()->create(['name' => 'Admin']);
+        $admin = User::factory()->admin()->create(['name' => 'Admin']);
         $this->aviso($admin, ['titulo' => 'Reciente', 'fecha_publicacion' => now()]);
         $this->aviso($admin, ['titulo' => 'Expirado', 'fecha_publicacion' => now()->subWeek(), 'fecha_expiracion' => now()->subDay()]);
         $this->aviso($admin, ['titulo' => 'Fijado', 'fecha_publicacion' => now()->subMonth(), 'fijado' => true]);
@@ -77,7 +77,7 @@ class AvisoControllerTest extends TestCase
     public function test_store_publishes_an_aviso_as_the_current_user()
     {
         $this->freezeSecond();
-        $admin = User::factory()->create();
+        $admin = User::factory()->admin()->create();
 
         $this->actingAs($admin)
             ->post(route('avisos.store'), $this->payload(['fechaExpiracion' => now()->addWeek()->toDateTimeString()]))
@@ -93,7 +93,7 @@ class AvisoControllerTest extends TestCase
 
     public function test_store_validates_the_form_with_spanish_messages()
     {
-        $this->actingAs(User::factory()->create());
+        $this->actingAs(User::factory()->admin()->create());
 
         $this->post(route('avisos.store'), $this->payload([
             'titulo' => '',
@@ -111,7 +111,7 @@ class AvisoControllerTest extends TestCase
 
     public function test_update_keeps_the_publication_date_when_it_is_not_sent()
     {
-        $admin = User::factory()->create();
+        $admin = User::factory()->admin()->create();
         $aviso = $this->aviso($admin, ['fecha_publicacion' => '2026-01-15 08:00:00']);
 
         $this->actingAs($admin)
@@ -126,7 +126,7 @@ class AvisoControllerTest extends TestCase
 
     public function test_update_status_deactivates_the_selected_avisos()
     {
-        $admin = User::factory()->create();
+        $admin = User::factory()->admin()->create();
         $primero = $this->aviso($admin);
         $segundo = $this->aviso($admin);
         $otro = $this->aviso($admin);
@@ -142,7 +142,7 @@ class AvisoControllerTest extends TestCase
 
     public function test_destroy_many_deletes_the_selected_avisos()
     {
-        $admin = User::factory()->create();
+        $admin = User::factory()->admin()->create();
         $primero = $this->aviso($admin);
         $otro = $this->aviso($admin);
 

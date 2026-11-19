@@ -58,7 +58,7 @@ class LocalControllerTest extends TestCase
 
     public function test_index_lists_locales_with_their_tenant()
     {
-        $this->actingAs(User::factory()->create());
+        $this->actingAs(User::factory()->admin()->create());
 
         $local = Local::factory()->ocupado()->create(['codigo' => 'LC-01']);
         $tenant = User::factory()->create(['name' => 'Carlos Mendoza', 'telefono' => '5512345678']);
@@ -82,7 +82,7 @@ class LocalControllerTest extends TestCase
 
     public function test_store_creates_a_local_and_its_tenant()
     {
-        $this->actingAs(User::factory()->create());
+        $this->actingAs(User::factory()->admin()->create());
 
         $this->post(route('locales.store'), $this->payload([
             'status' => 'Ocupado',
@@ -108,7 +108,7 @@ class LocalControllerTest extends TestCase
 
     public function test_store_validates_the_form_with_spanish_messages()
     {
-        $this->actingAs(User::factory()->create());
+        $this->actingAs(User::factory()->admin()->create());
         Local::factory()->create(['codigo' => 'LC-11']);
 
         $this->post(route('locales.store'), $this->payload(['name' => '', 'status' => 'Inexistente', 'tenantName' => 'Sin correo']))
@@ -124,7 +124,7 @@ class LocalControllerTest extends TestCase
 
     public function test_update_reassigns_and_removes_the_tenant()
     {
-        $this->actingAs(User::factory()->create());
+        $this->actingAs(User::factory()->admin()->create());
 
         $local = Local::factory()->create(['codigo' => 'LC-05']);
         $first = User::factory()->create();
@@ -153,7 +153,7 @@ class LocalControllerTest extends TestCase
 
     public function test_destroy_deletes_the_local_and_its_tenant_links()
     {
-        $this->actingAs(User::factory()->create());
+        $this->actingAs(User::factory()->admin()->create());
 
         $local = Local::factory()->create();
         $local->asignarLocatario(User::factory()->create());
@@ -166,7 +166,7 @@ class LocalControllerTest extends TestCase
 
     public function test_destroy_refuses_locales_with_financial_history()
     {
-        $this->actingAs(User::factory()->create());
+        $this->actingAs(User::factory()->admin()->create());
 
         $local = Local::factory()->create();
         $this->cargoPara($local);
@@ -178,7 +178,7 @@ class LocalControllerTest extends TestCase
 
     public function test_destroy_many_skips_locales_with_financial_history()
     {
-        $this->actingAs(User::factory()->create());
+        $this->actingAs(User::factory()->admin()->create());
 
         [$free, $withHistory] = Local::factory()->count(2)->create();
         $this->cargoPara($withHistory);
@@ -192,7 +192,7 @@ class LocalControllerTest extends TestCase
 
     public function test_update_status_changes_the_selected_locales()
     {
-        $this->actingAs(User::factory()->create());
+        $this->actingAs(User::factory()->admin()->create());
 
         [$a, $b, $c] = Local::factory()->ocupado()->count(3)->create();
 

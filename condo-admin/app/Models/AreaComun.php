@@ -46,4 +46,14 @@ class AreaComun extends Model
     {
         return $this->hasMany(Incidencia::class, 'area_comun_id');
     }
+
+    /**
+     * Indica si el horario [inicio, fin] cae dentro del horario del área.
+     * El cierre siempre es posterior a la apertura (AreaComunRequest).
+     */
+    public function abiertaEntre(string $horaInicio, string $horaFin): bool
+    {
+        return Reservacion::hora($horaInicio) >= Reservacion::hora($this->hora_apertura)
+            && Reservacion::hora($horaFin) <= Reservacion::hora($this->hora_cierre);
+    }
 }

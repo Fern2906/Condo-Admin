@@ -25,11 +25,11 @@ class AreaComunController extends Controller
     /**
      * Actualizar un área común existente.
      */
-    public function update(AreaComunRequest $request, AreaComun $areaComunum): RedirectResponse
+    public function update(AreaComunRequest $request, AreaComun $areaComun): RedirectResponse
     {
-        $areaComunum->update($request->areaComunAttributes());
+        $areaComun->update($request->areaComunAttributes());
 
-        Inertia::flash('toast', ['type' => 'success', 'message' => "Área \"{$areaComunum->nombre}\" actualizada."]);
+        Inertia::flash('toast', ['type' => 'success', 'message' => "Área \"{$areaComun->nombre}\" actualizada."]);
 
         return to_route('reservaciones.index');
     }
@@ -37,20 +37,20 @@ class AreaComunController extends Controller
     /**
      * Eliminar un área común que no tenga reservaciones activas.
      */
-    public function destroy(AreaComun $areaComunum): RedirectResponse
+    public function destroy(AreaComun $areaComun): RedirectResponse
     {
-        if ($areaComunum->reservaciones()->whereIn('estado', ['pendiente', 'aprobada'])->exists()) {
+        if ($areaComun->reservaciones()->whereIn('estado', ['pendiente', 'aprobada'])->exists()) {
             Inertia::flash('toast', [
                 'type'    => 'error',
-                'message' => "El área \"{$areaComunum->nombre}\" tiene reservaciones activas y no se puede eliminar.",
+                'message' => "El área \"{$areaComun->nombre}\" tiene reservaciones activas y no se puede eliminar.",
             ]);
 
             return to_route('reservaciones.index');
         }
 
-        $areaComunum->delete();
+        $areaComun->delete();
 
-        Inertia::flash('toast', ['type' => 'success', 'message' => "Área \"{$areaComunum->nombre}\" eliminada."]);
+        Inertia::flash('toast', ['type' => 'success', 'message' => "Área \"{$areaComun->nombre}\" eliminada."]);
 
         return to_route('reservaciones.index');
     }

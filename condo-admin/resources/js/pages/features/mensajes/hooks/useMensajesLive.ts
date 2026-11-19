@@ -2,6 +2,10 @@ import { useEffect, useMemo, useState } from 'react';
 import { useConnectionStatus, useEchoPublic } from '@laravel/echo-react';
 import type { ContactoOption, CurrentUser, MensajeData, SolicitudOption } from '@/types/mensajes.types';
 
+// Marca de tiempo de un mensaje; sin fecha cuenta como el más antiguo (0)
+// en lugar de producir NaN, que rompe las comparaciones y el ordenamiento.
+const tiempoDe = (mensaje?: MensajeData): number => (mensaje?.createdAt ? new Date(mensaje.createdAt).getTime() : 0);
+
 export const useMensajesLive = (
     initialMensajes: MensajeData[],
     contactos: ContactoOption[],
@@ -72,7 +76,7 @@ export const useMensajesLive = (
             const otherId = m.emisorId === currentUser.id ? m.receptorId : m.emisorId;
             if (otherId) {
                 const current = last[otherId];
-                if (!current || new Date(m.createdAt).getTime() > new Date(current.createdAt).getTime()) {
+                if (!current || tiempoDe(m) > tiempoDe(current)) {
                     last[otherId] = m;
                 }
             }
@@ -113,11 +117,8 @@ export const useMensajesLive = (
         );
 
         return [...filtered].sort((a, b) => {
-            const lastMsgA = lastMessageByContact[a.id];
-            const lastMsgB = lastMessageByContact[b.id];
-
-            const timeA = lastMsgA ? new Date(lastMsgA.createdAt).getTime() : 0;
-            const timeB = lastMsgB ? new Date(lastMsgB.createdAt).getTime() : 0;
+            const timeA = tiempoDe(lastMessageByContact[a.id]);
+            const timeB = tiempoDe(lastMessageByContact[b.id]);
 
             // Más reciente primero
             if (timeA !== timeB) {

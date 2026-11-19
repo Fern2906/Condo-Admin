@@ -2,7 +2,9 @@
 
 namespace Tests\Feature;
 
+use App\Models\AreaComun;
 use App\Models\Local;
+use App\Models\Reservacion;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Inertia\Testing\AssertableInertia as Assert;
@@ -42,6 +44,36 @@ class DashboardTest extends TestCase
                 ->where('stats.localesDisponibles', 2)
                 ->where('stats.incidenciasAbiertas', 0)
                 ->where('stats.reservacionesHoy', 0)
+            );
+    }
+
+    public function test_dashboard_counts_todays_active_and_approved_reservations()
+    {
+        $this->withoutVite();
+        $admin = User::factory()->admin()->create();
+        $area = AreaComun::create(['nombre' => 'Salón', 'hora_apertura' => '07:00', 'hora_cierre' => '23:00']);
+
+        $reservar = fn (string $estado, string $inicio, string $fin, ?string $fecha = null) => Reservacion::create([
+            'area_comun_id' => $area->id,
+            'usuario_id' => $admin->id,
+            'fecha' => $fecha ?? today()->toDateString(),
+            'hora_inicio' => $inicio,
+            'hora_fin' => $fin,
+            'estado' => $estado,
+        ]);
+
+        $reservar('aprobada', '08:00', '09:00');
+        $reservar('aprobada', '10:00', '11:00');
+        $reservar('pendiente', '12:00', '13:00');
+        $reservar('rechazada', '14:00', '15:00');
+        $reservar('cancelada', '16:00', '17:00');
+        $reservar('aprobada', '08:00', '09:00', today()->addDay()->toDateString());
+
+        $this->actingAs($admin)
+            ->get(route('dashboard'))
+            ->assertInertia(fn (Assert $page) => $page
+                ->where('stats.reservacionesHoy', 3)
+                ->where('stats.reservacionesHoyAprobadas', 2)
             );
     }
 }

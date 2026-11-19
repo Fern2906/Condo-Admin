@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Rol;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
@@ -34,6 +35,29 @@ class UserFactory extends Factory
             'two_factor_recovery_codes' => null,
             'two_factor_confirmed_at' => null,
         ];
+    }
+
+    /**
+     * Usuario con rol de administrador (acceso a los módulos de administración).
+     */
+    public function admin(): static
+    {
+        return $this->conRol(Rol::ADMINISTRADOR);
+    }
+
+    /**
+     * Usuario con rol de locatario.
+     */
+    public function locatario(): static
+    {
+        return $this->conRol(Rol::LOCATARIO);
+    }
+
+    private function conRol(string $rol): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'rol_id' => Rol::firstOrCreate(['nombre' => $rol])->id,
+        ]);
     }
 
     /**

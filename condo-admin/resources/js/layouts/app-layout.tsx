@@ -4,11 +4,13 @@ import { Footer } from '@/matine-components/footer';
 
 export default function AppLayout({ children }: Readonly<{ children: React.ReactNode }>) {
     const { auth } = usePage().props;
-    const isLocatario = auth.user?.rol?.nombre === 'locatario';
+    // Los módulos de administración solo existen para el administrador; el
+    // resto de usuarios (locatarios, propietarios, sin rol) usa su propio panel.
+    const isAdmin = auth.user?.rol?.nombre === 'administrador';
 
     const links = [
-        { link: isLocatario ? '/locatario/dashboard' : '/dashboard', label: 'Dashboard' },
-        { link: '/avisos', label: 'Avisos' },
+        { link: isAdmin ? '/dashboard' : '/locatario/dashboard', label: 'Dashboard' },
+        ...(isAdmin ? [{ link: '/avisos', label: 'Avisos' }] : []),
         { link: '/mensajes', label: 'Mensajes' },
     ];
 
