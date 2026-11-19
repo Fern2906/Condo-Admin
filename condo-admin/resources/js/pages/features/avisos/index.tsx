@@ -80,7 +80,7 @@ export default function AvisosList({ avisos, isAdmin = true }: Readonly<AvisosLi
                         <Text c="dimmed">No se encontraron avisos con los filtros seleccionados.</Text>
                     </Paper>
                 ) : (
-                    <Grid gutter="md">
+                    <Grid gap="md">
                         {filters.filteredAvisos.map((aviso) => {
                             const isSelected = actions.selection.includes(aviso.id);
 

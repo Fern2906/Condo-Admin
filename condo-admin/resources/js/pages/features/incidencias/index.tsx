@@ -11,6 +11,7 @@ import {
 } from '@tabler/icons-react';
 import IncidenciaController from '@/actions/App/Http/Controllers/IncidenciasController';
 import { TittlePage } from '@/matine-components/tittle-page';
+import { BulkActions } from '@/layouts/sections/bulk-actions';
 
 type Estado = 'abierta' | 'asignada' | 'en_proceso' | 'resuelta' | 'cerrada' | 'cancelada';
 type Prioridad = 'baja' | 'media' | 'alta' | 'urgente';
@@ -495,32 +496,6 @@ export default function IncidenciasPage({ incidencias, categorias, locales, area
                     </SimpleGrid>
                 </Card>
 
-                {/* Acciones masivas */}
-                {selection.length > 0 && (
-                    <Card withBorder radius="md" padding="sm" bg="var(--mantine-color-blue-0)">
-                        <Group justify="space-between" wrap="wrap">
-                            <Text size="sm" fw={600}>{selection.length} incidencias seleccionadas</Text>
-                            <Group gap="xs">
-                                <Menu shadow="md">
-                                    <Menu.Target>
-                                        <Button size="xs" variant="light">Cambiar estado</Button>
-                                    </Menu.Target>
-                                    <Menu.Dropdown>
-                                        {ESTADOS.map((e) => (
-                                            <Menu.Item key={e.value} onClick={() => handleChangeEstado(selection, e.value)}>
-                                                {e.label}
-                                            </Menu.Item>
-                                        ))}
-                                    </Menu.Dropdown>
-                                </Menu>
-                                <Button size="xs" variant="light" color="red" leftSection={<IconTrash size={14} />} onClick={handleDeleteSelected}>
-                                    Eliminar
-                                </Button>
-                                <Button size="xs" variant="default" onClick={() => setSelection([])}>Cancelar</Button>
-                            </Group>
-                        </Group>
-                    </Card>
-                )}
 
                 {/* Tabla */}
                 <Card withBorder radius="md" padding="lg" w="100%">
@@ -626,6 +601,40 @@ export default function IncidenciasPage({ incidencias, categorias, locales, area
                         </Table>
                     </Table.ScrollContainer>
                 </Card>
+
+                {/* Acciones masivas */}
+                <BulkActions
+                    count={selection.length}
+                    onClear={() => setSelection([])}
+                    itemName="incidencias"
+                    actions={[
+                        {
+                            label: 'Cambiar estado',
+                            icon: IconClockPlay,
+                            color: 'blue',
+                            menu: ESTADOS.map((e) => ({
+                                label: e.label,
+                                onClick: () => handleChangeEstado(selection, e.value),
+                            })),
+                        },
+                        {
+                            label: 'Editar',
+                            icon: IconPencil,
+                            color: 'yellow',
+                            disabled: selection.length !== 1,
+                            onClick: () => {
+                                const selected = incidencias.find((i) => i.id === selection[0]);
+                                if (selected) handleOpenEdit(selected);
+                            },
+                        },
+                        {
+                            label: 'Eliminar',
+                            icon: IconTrash,
+                            color: 'red',
+                            onClick: handleDeleteSelected,
+                        },
+                    ]}
+                />
             </Stack>
 
             {/* Modal: Crear */}
