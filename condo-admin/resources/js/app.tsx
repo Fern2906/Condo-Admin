@@ -15,9 +15,15 @@ import dayjs from 'dayjs';
 import 'dayjs/locale/es';
 
 dayjs.locale('es');
-configureEcho({
-    broadcaster: 'reverb',
-});
+if (import.meta.env.VITE_REVERB_APP_KEY) {
+    configureEcho({
+        broadcaster: 'reverb',
+    });
+} else {
+    configureEcho({
+        broadcaster: 'null',
+    });
+}
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
 void createInertiaApp({
